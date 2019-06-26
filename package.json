@@ -15,5 +15,14 @@
   "bugs": {
     "url": "https://github.com/WeighUp/weighup-hub-node/issues"
   },
-  "homepage": "https://github.com/WeighUp/weighup-hub-node#readme"
+  "homepage": "https://github.com/WeighUp/weighup-hub-node#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/node": "^7.4.5",
+    "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
+    "@babel/preset-env": "^7.4.5",
+    "babel-jest": "^24.8.0",
+    "jest": "^24.8.0"
+  }
 }
