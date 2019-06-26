@@ -1,0 +1,19 @@
+{
+  "name": "weighup-hub-node",
+  "version": "0.0.1",
+  "description": "nodejs implementation of weighup hub",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WeighUp/weighup-hub-node.git"
+  },
+  "author": "@speakingcode (Daniel Lissner)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/WeighUp/weighup-hub-node/issues"
+  },
+  "homepage": "https://github.com/WeighUp/weighup-hub-node#readme"
+}
