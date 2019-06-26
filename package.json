@@ -2,9 +2,29 @@
   "name": "weighup-hub-node",
   "version": "0.0.1",
   "description": "nodejs implementation of weighup hub",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "files":[
+    "dist"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prestart": "npm run build",
+    "start": "npm run dev",
+    "dev": "NODE_ENV='development' babel-node ./dist/index.js",
+    "init": "mkdir dist",
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean && npm run init",
+    "build": "babel ./src -d ./dist --ignore \"src/**/*.spec.js\",\"src/**/*.test.js\"",
+    "pretest": "npm run build",
+    "test": "jest",
+    "test:watch": "npm run test -- --watchAll",
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env"
+    ],
+    "plugins": [
+      "@babel/plugin-proposal-object-rest-spread"
+    ]
   },
   "repository": {
     "type": "git",
