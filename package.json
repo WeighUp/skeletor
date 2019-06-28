@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "nodejs implementation of weighup hub",
   "main": "./dist/index.js",
-  "files":[
+  "files": [
     "dist"
   ],
   "scripts": {
@@ -16,7 +16,7 @@
     "build": "babel ./src -d ./dist --ignore \"src/**/*.spec.js\",\"src/**/*.test.js\"",
     "pretest": "npm run build",
     "test": "jest",
-    "test:watch": "npm run test -- --watchAll",
+    "test:watch": "npm run test -- --watchAll"
   },
   "babel": {
     "presets": [
@@ -44,5 +44,8 @@
     "@babel/preset-env": "^7.4.5",
     "babel-jest": "^24.8.0",
     "jest": "^24.8.0"
+  },
+  "dependencies": {
+    "serialport": "^7.1.5"
   }
 }
