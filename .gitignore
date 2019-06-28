@@ -122,3 +122,5 @@ tags
 [._]*.un~
 
 # End of https://www.gitignore.io/api/git,vim,node
+
+dist/
