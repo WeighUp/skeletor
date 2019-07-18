@@ -14,7 +14,7 @@ export const CMSG_SETZERO = 0x0C;
 export const CMSG_SETSCALE = 0x0D;
 export const CMSG_GET_TEMP = 0x0E;
 
-export const CCMD_RESET = 0x80;
+export const CCMD_REBOOT = 0x80;
 export const CCMD_IDENTIFY = 0x81;
 export const CCMD_YOU_ARE = 0x82;
 export const CCMD_SET_SERIAL = 0x83;
@@ -30,7 +30,7 @@ export const CCMD_GET_TEMP = 0x8C;
 export const CCMD_MAX = 0x8D;
 
 export const EXTD_MSG = 0xAAE8
-export const PADDING  = 0x00
+export const NO_VALUE = 0x00
 export const TERM     = 0x55
 export const NO_ERROR = 0x00
-
+export const ADDR_ALL = 0x00
