@@ -1,6 +1,8 @@
 #node, npm...
-FROM node:alpine
+FROM node:12.4-alpine
 
+
+RUN apk add --no-cache make gcc g++ python linux-headers udev
 #directory for our app
 WORKDIR /weighup-hub-node
 
