@@ -20,7 +20,8 @@
   },
   "babel": {
     "presets": [
-      "@babel/preset-env"
+      "@babel/preset-env",
+      "@babel/preset-react"
     ],
     "plugins": [
       "@babel/plugin-proposal-object-rest-spread"
@@ -52,6 +53,7 @@
     "moment": "^2.24.0",
     "react": "^16.8.6",
     "react-blessed": "^0.6.1",
-    "serialport": "^7.1.5"
+    "serialport": "^7.1.5",
+    "telnet2": "0.0.1"
   }
 }

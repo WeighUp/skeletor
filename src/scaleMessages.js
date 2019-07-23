@@ -2,11 +2,8 @@ import * as scaleCodes from './scaleCodes'
 
 export const toBytes = (message) => {
 
-  const prefix = Buffer.alloc(2)
-  prefix.writeUInt16BE(message.prefix)
-
   return Buffer.from([
-    ...prefix,
+    ...message.prefix,
     message.msidParam,
     message.errorStatus,
     message.opCode,
@@ -38,20 +35,22 @@ export const fromBytes = (serialData) => {
   }
 }
 
-export const log = ({
+export const asString = ({
   prefix,
   msidParam,
   errorStatus,
   opCode,
   address,
   payload
-}) => {
-  console.log(`
-prefix       : 0x${prefix.toString('hex')}
+}) => (
+`prefix       : 0x${prefix.toString('hex')}
 msidParam    : 0x${msidParam.toString(16)}
 errorStatus  : 0x${errorStatus.toString(16)}
 opCode       : 0x${opCode.toString(16)}/${Object.keys(scaleCodes).find(key => scaleCodes[key] === opCode)}
 address      : 0x${address.toString(16)}
-payload      : 0x${payload.toString('hex')}/${payload.readBigInt64BE().toString(10)}/${payload.slice(0,4).readFloatBE()}F - ${payload.slice(4).readFloatBE()}F
-  `)
+payload      : 0x${payload.toString('hex')}/${payload.readBigInt64BE().toString(10)}/${payload.slice(0,4).readFloatBE()}F - ${payload.slice(4).readFloatBE()}F`
+)
+
+export const log = (message) => {
+  console.log(asString(message))
 }
