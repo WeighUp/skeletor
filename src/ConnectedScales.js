@@ -7,7 +7,7 @@ import Context      from './Context'
 import stylesheet   from './styles'
 
 const ConnectedScales = () => {
-  const [state, setState] = useContext(Context)
+  const [state, dispatch] = useContext(Context)
 
     return(
 
@@ -28,9 +28,9 @@ const ConnectedScales = () => {
             }}
       rows={[
         ['Sequence #', 'Serial #'],
-        ...state.connectedScales.map(scale => [scale.sequenceNo.toString(), scale.serialNo.toString(16)])
+        ...Object.values(state.connectedScales).map(scale => [scale.address.toString(), scale.serialNo.toString(16)])
       ]}
-      onSelect={(scale, index) => setState({selectedScale: state.connectedScales[index-1]})}
+      onSelect={(scale, index) => dispatch({type: 'scaleSelected', payload: {selectedScale: state.connectedScales[index-1]}})}
     />
     </element>
     )

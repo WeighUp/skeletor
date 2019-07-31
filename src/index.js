@@ -1,4 +1,4 @@
-import React, { useState }  from 'react'
+import React, { useReducer }  from 'react'
 import blessed              from 'neo-blessed'
 import { render }           from 'react-blessed'
 
@@ -34,36 +34,83 @@ screen.key(['escape', 'q', 'C-c'], function(ch, key) {
   return process.exit(0);
 })
 
-const App = () => {
-    let [state, _setState] = useState({
-        scaleMessages   : [
-          {
-            message: ScaleMessages.fromBytes(Buffer.from([0xAA, 0xE8, 0x00, 0x00, 0x08, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x55])),
-            readingTime: moment(),
-          },
-          {
-            message: ScaleMessages.fromBytes(Buffer.from([0xAA, 0xE8, 0x00, 0x00, 0x08, 0x02, 0xC1, 0x11, 0x72, 0x14, 0x00, 0x00, 0x00, 0x00, 0x55])),
-            readingTime: moment(),
-          },
-        ],
-        selectedMessage : null,
-        connectedScales : [
-          { sequenceNo: 0, serialNo: 0x0012013C },
-          { sequenceNo: 1, serialNo: 0x10073A91 },
-          { sequenceNo: 2, serialNo: 0x000FC300 },
-        ],
-        selectedScale   : {sequenceNo: 4},
-        devicePath      : '',
-        portConnected   : false,
-    })
 
-    const setState = newState => {
-      _setState({...state, ...newState})
-    }
+const connectSerialPort = (path, onData) => {
+  const port = new SerialPort(path, {baudRate: 1228800})
+  port.on('data', onData)
+
+  return port
+}
+
+const initialState = {
+  scaleMessages   : [
+    {
+      message: ScaleMessages.fromBytes(Buffer.from([0xAA, 0xE8, 0x00, 0x00, 0x08, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x55])),
+      readingTime: moment(),
+
+    },
+    {
+      message: ScaleMessages.fromBytes(Buffer.from([0xAA, 0xE8, 0x00, 0x00, 0x08, 0x02, 0xC1, 0x11, 0x72, 0x14, 0x00, 0x00, 0x00, 0x00, 0x55])),
+      readingTime: moment(),
+    },
+  ],
+  selectedMessage : null,
+  connectedScales : {
+    0: { address: 0, serialNo: 0x0012013C },
+    1: { address: 1, serialNo: 0x10073A91 },
+    2: { address: 2, serialNo: 0x000FC300 },
+  },
+  selectedScale   : null,
+  devicePath      : null,
+  port            : null,
+}
+
+const reducer = (state, {type, payload}) => {
+  switch(type) {
+    case 'setDevicePath':
+      return {...state, ...payload}
+    case 'portConnected':
+      return {...state, ...payload}
+    case 'portDisconnected':
+      return {...state, port: null}
+    case 'scaleConnected':
+      return {
+        ...state,
+        connectedScales: {
+          ...state.connectedScales,
+          [payload.address]: payload,
+        }
+      }
+    case 'dropScaleList':
+      return {...state, connectedScales: []}
+    case 'scaleSelected':
+      return {...state, ...payload}
+    case 'messageReceived':
+      return {
+        ...state,
+        scaleMessages: [
+          ...state.scaleMessages,
+          payload,
+        ],
+      }
+    case 'messageSelected':
+      return {
+        ...state,
+        ...payload
+      }
+    default:
+      return state
+  }
+}
+
+const App = () => {
+    let [state, dispatch] = useReducer(reducer, initialState)
+
+    let {port, scaleMessages, devicePath} = state
 
     return (
 
-    <Context.Provider value={[state, setState]}>
+    <Context.Provider value={[state, dispatch]}>
   <element
     top="0%"
     left="0%"
@@ -71,7 +118,45 @@ const App = () => {
     height="100%"
     class={stylesheet.bordered}
   >
-        <ConnectionForm />
+        <ConnectionForm
+          connected={port}
+          onSubmit={
+            formData => {
+
+              if(!port && devicePath) {
+                port = connectSerialPort(
+                  devicePath,
+                  data => {
+                    const message = ScaleMessages.fromBytes(data)
+                    dispatch({
+                      type: 'messageReceived',
+                      payload: {
+                        message,
+                        readingTime: moment(),
+                      }
+                    })
+                    if (message.opCode == ScaleCodes.CMSG_I_AM) {
+                      dispatch({
+                        type: 'scaleConnected',
+                        payload: {
+                          address: message.address,
+                          serialNo: message.payload.slice(2,6).readUInt32BE(),
+                        },
+                      })
+                    }
+                  }
+                )
+
+                dispatch({type: 'portConnected', payload: {port}})
+              }
+            }
+          }
+
+          onDisconnect={() => {
+            port.close()
+            dispatch({type: 'portDisconnected'})
+          }}
+        />
         <MessageList />
         <MessageDetails />
         <ConnectedScales />

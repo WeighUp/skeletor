@@ -9,7 +9,7 @@ import * as ScaleMessages from './scaleMessages'
 import stylesheet from './styles'
 
 const MessageDetails = () => {
-  const [{selectedMessage}, setState] = useContext(Context)
+  const [{selectedMessage}, dispatch] = useContext(Context)
 
   return(
     <box

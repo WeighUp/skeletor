@@ -9,7 +9,7 @@ import * as ScaleMessages from './scaleMessages'
 import stylesheet from './styles'
 
 const MessageList = () => {
-  const [state, setState] = useContext(Context)
+  const [state, dispatch] = useContext(Context)
 
   return <list
       top={3}
@@ -26,7 +26,7 @@ const MessageList = () => {
             }}
     label="Incoming Messages"
     items={state.scaleMessages.map((msg, index) => `${index} - ${ScaleMessages.toBytes(msg.message).toString('hex')}`)}
-    onSelect={(msg, index) => setState({selectedMessage: state.scaleMessages[index]})}
+    onSelect={(msg, index) => dispatch({type: 'messageSelected', payload: {selectedMessage: state.scaleMessages[index]}})}
     />
 }
 
