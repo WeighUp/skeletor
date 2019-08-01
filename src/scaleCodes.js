@@ -29,7 +29,7 @@ export const CCMD_SETSCALE = 0x8B;
 export const CCMD_GET_TEMP = 0x8C;
 export const CCMD_MAX = 0x8D;
 
-export const EXTD_MSG = 0xAAE8
+export const EXTD_MSG = [0xAA, 0xE8]
 export const NO_VALUE = 0x00
 export const TERM     = 0x55
 export const NO_ERROR = 0x00

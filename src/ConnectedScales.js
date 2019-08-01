@@ -1,15 +1,19 @@
-import React, {
-       useContext
-}                   from 'react'
+import React,
+       {
+         useContext,
+         useState,
+       }            from 'react'
 
 import Context      from './Context'
 
 import stylesheet   from './styles'
 
-const ConnectedScales = () => {
-  const [state, dispatch] = useContext(Context)
+const ConnectedScales = ({
+  refreshScales,
+}) => {
+  const [{connectedScales}, dispatch] = useContext(Context)
 
-    return(
+  return(
 
     <element 
       top={18}
@@ -17,9 +21,24 @@ const ConnectedScales = () => {
       class={stylesheet.bordered}
       label="Connected Scales"
     >
+
+    <button
+      name="refresh"
+      onPress={() => {refreshScales()}}
+      keys
+      mouse
+      height={3}
+      width={9}
+      class={stylesheet.bordered}
+
+    >
+      Refresh
+    </button>
+
     <listtable
       mouse={ true }
       keys={ true }
+        top={10}
         height="50%"
 
         style={{
@@ -28,9 +47,17 @@ const ConnectedScales = () => {
             }}
       rows={[
         ['Sequence #', 'Serial #'],
-        ...Object.values(state.connectedScales).map(scale => [scale.address.toString(), scale.serialNo.toString(16)])
+        ...Object.values(connectedScales).map(scale => [scale.address.toString(), scale.serialNo.toString(16)])
       ]}
-      onSelect={(scale, index) => dispatch({type: 'scaleSelected', payload: {selectedScale: state.connectedScales[index-1]}})}
+      onSelect={(scale, index) => {
+          console.log(index)
+          console.log(connectedScales)
+          dispatch({
+            type: 'scaleSelected',
+            //index-1 because tablelist uses first index for column headers durp
+            payload: {selectedScale: Object.values(connectedScales)[index-1]}
+          })
+      }}
     />
     </element>
     )

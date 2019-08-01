@@ -12,8 +12,8 @@ export const scaleCommandTemplate = {
 
 
   // set an address
-export const youAre = (address = 0, serialNumber = 0xFFFFFFFF) => {
-  _serialNumber = Buffer.alloc(4)
+export const youAre = (address = 0, newAddress, serialNumber = 0xFFFFFFFF) => {
+ const _serialNumber = Buffer.alloc(4)
   _serialNumber.writeUInt32BE(serialNumber)
 
   return {
@@ -22,7 +22,7 @@ export const youAre = (address = 0, serialNumber = 0xFFFFFFFF) => {
     address,
     payload: [
       0x00,
-      address,
+      newAddress,
       ..._serialNumber,
       0x00,
       0x00,
@@ -54,7 +54,7 @@ export const setSerial = (address = 0, serialNumber) => {
 
   return {
     ...scaleCommandTemplate,
-    opCode: ScaleCodes.CCMD_IDENTIFY,
+    opCode: ScaleCodes.CCMD_SET_SERIAL,
     address,
     payload: [
       0x00,

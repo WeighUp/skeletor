@@ -1,7 +1,6 @@
 import * as scaleCodes from './scaleCodes'
 
 export const toBytes = (message) => {
-
   return Buffer.from([
     ...message.prefix,
     message.msidParam,

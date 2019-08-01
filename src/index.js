@@ -43,23 +43,9 @@ const connectSerialPort = (path, onData) => {
 }
 
 const initialState = {
-  scaleMessages   : [
-    {
-      message: ScaleMessages.fromBytes(Buffer.from([0xAA, 0xE8, 0x00, 0x00, 0x08, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x55])),
-      readingTime: moment(),
-
-    },
-    {
-      message: ScaleMessages.fromBytes(Buffer.from([0xAA, 0xE8, 0x00, 0x00, 0x08, 0x02, 0xC1, 0x11, 0x72, 0x14, 0x00, 0x00, 0x00, 0x00, 0x55])),
-      readingTime: moment(),
-    },
-  ],
+  scaleMessages   : [],
   selectedMessage : null,
-  connectedScales : {
-    0: { address: 0, serialNo: 0x0012013C },
-    1: { address: 1, serialNo: 0x10073A91 },
-    2: { address: 2, serialNo: 0x000FC300 },
-  },
+  connectedScales : {},
   selectedScale   : null,
   devicePath      : null,
   port            : null,
@@ -122,7 +108,6 @@ const App = () => {
           connected={port}
           onSubmit={
             formData => {
-
               if(!port && devicePath) {
                 port = connectSerialPort(
                   devicePath,
@@ -159,8 +144,49 @@ const App = () => {
         />
         <MessageList />
         <MessageDetails />
-        <ConnectedScales />
-        <ScaleDetails />
+        <ConnectedScales
+          refreshScales={()=> {
+            if(port) {
+              dispatch({type: 'dropScaleList'})
+              port.write(
+                ScaleMessages.toBytes(
+                  ScaleCommands.identify()
+                )
+              )
+            }
+          }}
+        />
+        <ScaleDetails
+          youAreSubmit={(address, newAddress, serialNo)=> {
+            if(port) {
+              port.write(
+                ScaleMessages.toBytes(
+                  ScaleCommands.youAre(address, newAddress, serialNo)
+                )
+              )
+            }
+          }}
+
+          setSerialSubmit={(address, serialNo)=> {
+            if(port) {
+              port.write(
+                ScaleMessages.toBytes(
+                  ScaleCommands.setSerial(address, serialNo)
+                )
+              )
+            }
+          }}
+
+          writeFlashSubmit={(address, serialNo)=> {
+            if(port) {
+              port.write(
+                ScaleMessages.toBytes(
+                  ScaleCommands.writeFlash(address, serialNo)
+                )
+              )
+            }
+          }}
+        />
 
 
   </element>
