@@ -25,8 +25,8 @@ The Besram CAN converter has a built-in 120Ω termination resistor. The last sca
 - Big endian
 
 ```
-address - [    0 - 1    |2      |3     |4      |5      |       6 - 13          |14   ]
-meaning - [prefix/type  |MSID   |error |opcode |address|data (big endian)      |EOF  ]
+address - [0 - 1    |2      |3     |4      |5      |       6 - 13          |14   ]
+meaning - [BOF/type  |MSID   |error |opcode |address|data (big endian)      |EOF  ]
 example - [0xAA 0xE8    |0x80   |0x00  |0x08   |0x01   |0x44 0x5D 0x59 0x0C... |0x55 ]
 ```
 
@@ -35,7 +35,7 @@ serial stream. The packets start with 0xAAE8 and end with 0x55. The 0xAA is a st
 and the 0x55 is an end of frame, but caution is needed since the CAN data may contain 0xAA
 and 0x55. It is advisable to count bytes from 0xAAE8 (there will be 12 CAN packet bytes). The
 0xE8 denotes an extended frame. The packet formats shown below are the CAN bytes,
-excluding the Besram frame bytes: [0xAAE8]_____ [0x55].
+excluding the Besram frame bytes: [0xAAE8][____________][0x55].
 The four byte MSID is sent in reverse byte order compared to what would be seen in the
 embedded debugger. The fourth byte is the source address. The third byte is the opcode
 (0x01 is CMSG_I_AM). The remainder of the CAN MSID is 0x0000 but may also contain error
@@ -84,8 +84,8 @@ CCMD_MAX        = 0x8D
 
 #### Special Constants
 ```
-# Besram Start-of-Frame character
-START           = 0xAA
+# Besram Beginning-of-Frame character
+BOF             = 0xAA
 
 # Besram Extended-frame indicator
 EXTD_MSG        = 0xE8
@@ -103,30 +103,30 @@ NO_ERROR        = 0x00
 EOF             = 0x55
 ```
 
-### Scale Commands & Messages
+## Scale Commands & Messages
 
-#### Identity Commands and Responses
+### Identity Commands and Responses
 Messages are emitted from the scales and commands are sent to the scales. Both commands
 and messages are internally transmitted between tasks.
 
-##### Message “CMSG_I_AM”
-aa 01 00 00 00 aa ss ss ss ss 00 00
-aa is the address, ssssssss is the serial number
-The startup message is an identity statement.
-The first two bytes are the address and the next four bytes are the serial number. If the serial
-number is 0xFFFFFFFF then the unit is unconfigured and best still be at the factory. If the
-address is zero then the unit has not been configured on a network.
+#### Message “CMSG_I_AM”
+`aa 01 00 00 00 aa ss ss ss ss 00 00`  
+`aa` is the address, `ssssssss` is the serial number
 
-##### Command “CCMD_IDENTIFY”
-Command: aa 81 00 00 00 aa ss ss ss ss 00 00
-Response: aa 01 00 00 00 aa ss ss ss ss 00 00
-aa is the address, ssssssss is the serial number
-Command “CCMD_IDENTIFY” (0x81) may be sent to obtain the CMSG_I_AM packet. Sending
-to address 0x00 will poll all connected devices, otherwise, only devices with matching
-addresses will process the command.
+The startup message is an identity statement. The first two bytes are the address and the next four bytes are the serial number. If the serial number is 0xFFFFFFFF then the unit is unconfigured and best still be at the factory. If the address is zero then the unit has not been configured on a network.
+
+#### Command “CCMD_IDENTIFY”
+Command: `aa 81 00 00 00 aa ss ss ss ss 00 00`  
+Response: `aa 01 00 00 00 aa ss ss ss ss 00 00`  
+`aa` is the address, `ssssssss` is the serial number
+
+Command `CCMD_IDENTIFY` (0x81) may be sent to obtain the `CMSG_I_AM` packet. Sending to address 0x00 will poll all connected devices, otherwise, only devices with matching addresses will process the command
+
 Tested: “identify” and resulting “I am”:
+```
 <AA><E8><00><00><81><00><00><00><00><00><00><00><00><00><55>
 <AA><E8><00><00><01><00><00><00><FF><FF><FF><FF><00><00><55>
+```
 
 ##### Command “CCMD_YOU_ARE”
 Command: aa 82 00 00 00 aa ss ss ss ss 00 00
