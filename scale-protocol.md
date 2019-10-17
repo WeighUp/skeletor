@@ -128,66 +128,74 @@ Tested: “identify” and resulting “I am”:
 <AA><E8><00><00><01><00><00><00><FF><FF><FF><FF><00><00><55>
 ```
 
-##### Command “CCMD_YOU_ARE”
-Command: aa 82 00 00 00 aa ss ss ss ss 00 00
-Response: aa 01 00 00 00 aa ss ss ss ss 00 00
-aa is the address, ssssssss is the serial number
-Command “CCMD_ YOU_ARE” (0x82) may be sent. It takes the serial number to be configured
-as the 3
-rd – 6th bytes of the packet. Any device receiving the command and having a
-matching serial number will have the address in the first two bytes assigned. Note that only
-the LSB of the address is useable in the CAN packets.
-The assigned address is only retained in RAM. The response is CMSG_I_AM.
+#### Command “CCMD_YOU_ARE”
+Command: `aa 82 00 00 aa aa ss ss ss ss 00 00`  
+Response: `aa 01 00 00 00 aa ss ss ss ss 00 00`  
+`aa` is the address, `ssssssss` is the serial number
+
+Command `CCMD_ YOU_ARE` (0x82) takes the serial number to be configured as the 3rd – 6th bytes of the payload. Any device receiving the command and having a matching serial number will have the address in the first two bytes assigned. Note that only the LSB of the address is useable in the CAN packets.
+
+The assigned address is only retained in RAM. The response is `CMSG_I_AM`.
+
 Tested: “you are” and resulting “I am”, setting address to 1.
+```
 <AA><E8><00><00><82><00><00><01><FF><FF><FF><FF><00><00><55>
 <AA><E8><80><00><01><01><00><01><FF><FF><FF><FF><00><00><55>
+```
 
-##### Command “CCMD_SET_SERIAL”
-Command: aa 83 00 00 00 aa ss ss ss ss 00 00
-Response: aa 01 00 00 00 aa ss ss ss ss 00 00
-aa is the address, ssssssss is the serial number
-Command “CCMD_SET_SERIAL” (0x83) takes the serial number in the 3
-rd – 6th bytes of the
-packet and assigns it to the device. Any device receiving the command and having a
-matching address to the first two bytes will be set to this serial number. Note that only the
-LSB of the address is useable in the CAN packets.
-The assigned address is only retained in RAM. The response is CMSG_I_AM.
+#### Command “CCMD_SET_SERIAL”
+Command: `aa 83 00 00 00 aa ss ss ss ss 00 00`  
+Response: `aa 01 00 00 00 aa ss ss ss ss 00 00`  
+`aa` is the address, `ssssssss` is the serial number
+
+Command `CCMD_SET_SERIAL` (0x83) takes the serial number in the 3rd – 6th bytes of the payload and assigns it to the device. Any device receiving the command and having a matching address to the first two bytes will be set to this serial number. Note that only the LSB of the address is useable in the CAN packets.
+
+The assigned address is only retained in RAM. `The response is CMSG_I_AM`.
+
 Tested: “set serial” and resulting “I am”, setting serial number to 0x12345678
+```
 <AA><E8><00><00><83><01><00><01><12><34><56><78><00><00><55>
 <AA><E8><00><00><01><01><00><01><12><34><56><78><00><00><55>
+```
 
-#### Calibration Commands and Responses
+### Calibration Commands and Responses
 
-##### Command “CCMD_TARE”
-Command: aa 84 00 00 mm mm 00 00 00 00 00 00
-Response: aa 05 ee 00 zz zz zz zz 00 00 00 00
-Or aa 0A ee 00 zz zz zz zz 00 00 00 00
-aa is the address, mmmm is the number of ms to average, zzzzzzzz is the averaged ADC count at
-zero, ee is an error code if non-zero
-The response might be CMSG_TARE or CMSG_REZERO.
+#### Command “CCMD_TARE”
+Command: `aa 84 00 00 mm mm 00 00 00 00 00 00`  
+Response: `aa 05 ee 00 zz zz zz zz 00 00 00 00`  
+    Or    `aa 0A ee 00 zz zz zz zz 00 00 00 00`  
+`aa` is the address, `mmmm` is the number of ms to average, `zzzzzzzz` is the averaged ADC count at
+zero, `ee` is an error code if non-zero
+
+The response might be `CMSG_TARE` or `CMSG_REZERO`
+
 This command instructs the unit to make uncalibrated measurements and to average them
 to reset the “zero ADC counts”. Values are ignored until the automated measurement task
 resets its averaging. Thereafter, the measurement task averages ADC counts until the time
 elapses. If no valid measurements are made in the time allotted, then the command fails.
-The response is “CMSG_TARE” (0x05) with the unsigned long ADC value corresponding to zero
-in the first four data bytes.
-The new zero level is only retained in RAM.
-Tested: When any command is disabled by build settings, the response is an error code
-with the same opcode:
+
+The response is `CMSG_TARE` (0x05) with the unsigned long ADC value corresponding to zero
+in the first four data bytes. The new zero level is only retained in RAM.
+
+Tested: When any command is disabled by build settings, the response is an error code with the same opcode:
+```
 <AA><E8><00><00><84><00><00><03><00><00><00><00><00><00><55>
 <AA><E8><00><FF><84><00><00><03><00><00><00><00><00><00><55>
-Tested: When enabled by build settings, the response is a CMSG_TARE message (0x05),
-followed by a spurious CMSG_LIFT (0x02) message from the old non-zero weight to the
-new zero value:
+```
+
+Tested: When enabled by build settings, the response is a CMSG_TARE message (0x05), followed by a spurious CMSG_LIFT (0x02) message from the old non-zero weight to the new zero value:
+```
 <AA><E8><00><00><84><00><0B><B8><00><00><00><00><00><00><55>
 <AA><E8><00><00><05><00><FF><FF><CB><F7><00><00><00><00><55>
 <AA><E8><80><00><02><00><00><00><00><00><C1><55><2F><1B><55>
+```
 
-##### Command “CCMD_SCALE”
-Command: aa 85 00 00 ww ww ww ww 00 00 00 00
-Response: aa 06 00 00 ss ss ss ss 00 00 00 00
+#### Command “CCMD_SCALE”
+Command: `aa 85 00 00 ww ww ww ww 00 00 00 00`  
+Response: `aa 06 00 00 ss ss ss ss 00 00 00 00`  
 aa is the address, wwwwwwww is the weight (IEEE float), in grams, and sssssssss is the
 computed scale (IEEE float) in grams/ADC count.
+
 The startup message is an identity statement.
 Not implemented as of 9/16. The command is parsed and forwarded to the measurement
 task, but is not acted upon.
@@ -198,55 +206,69 @@ float value corresponding to scale in the first four data bytes in grams per ADC
 The new scale is only retained in RAM.
 Tested: When any command is disabled by build settings, the response is an error code
 with the same opcode:
+```
 <AA><E8><00><00><85><00><00><03><00><00><00><00><00><00><55>
 <AA><E8><00><FF><85><00><00><03><00><00><00><00><00><00><55>
+```
 
-#### Memory and Reboot Commands
+### Memory and Reboot Commands
 
-##### Command “CCMD_WR_FLSH”
-Command: aa 87 00 00 00 aa ss ss ss ss 00 00
-Response: aa 08 ee 00 00 00 00 00 00 00 00 00
+#### Command “CCMD_WR_FLSH”
+Command: `aa 87 00 00 00 aa ss ss ss ss 00 00`  
+Response: `aa 08 ee 00 00 00 00 00 00 00 00 00`  
 aa is the address, ssssssss is the serial number, ee is an error code if non-zero
+
 The device with matching serial number and address is instructed to commit the RAM values
 to FLASH. The response is “CMSG_WR_FLASH” (0x08) with no data and any error codes in the
 remainder of the msid.
 Tested: wrote “CCMD_WR_FLSH” and received “CMSG_WR_FLSH” with no error.
+```
 <AA><E8><00><00><87><00><00><00><00><00><00><00><00><00><55>
 <AA><E8><00><00><09><01><00><00><00><00><00><00><00><00><55>
+```
 
-##### Command “CCMD_REBOOT”
-aa 80 00 00 00 00 00 00 00 00 00 00
-Response: aa 01 00 00 00 aa ss ss ss ss 00 00
+#### Command “CCMD_REBOOT”
+`aa 80 00 00 00 00 00 00 00 00 00 00`  
+Response: `aa 01 00 00 00 aa ss ss ss ss 00 00`  
 aa is the address, ssssssss is the serial number
+
 All RAM values are lost and reloaded from NVM. On reboot, CMSG_I_AM is sent.
 Tested: “reboot” and resulting “I am”, showing NVM held (lost on reprogramming),
 confirming CCMD_WR_FLASH worked.
+```
 <AA><E8><00><00><80><00><00><00><00><00><00><00><00><00><55>
 <AA><E8><00><00><01><01><00><01><12><34><56><78><00><00><55>
+```
 
-#### Measurement Commands and Responses
+### Measurement Commands and Responses
 
-##### Command “CCMD_MEAS”
-Command: aa 86 00 00 00 00 00 00 00 00 00 00
-Response: aa 07 ee 00 ww ww ww ww dd dd dd dd
+#### Command “CCMD_MEAS”
+Command: `aa 86 00 00 00 00 00 00 00 00 00 00`  
+Response: `aa 07 ee 00 ww ww ww ww dd dd dd dd`  
 aa is the address, wwwwwwww is the weight (IEEE float), in grams, dddddddd is the ADC count
 at zero, and ee is an error code if non-zero
+
 This command instructs the unit to return the current weight. If a valid result is cached, it is
 sent. If a measurement does not stabilize within a timeout period, an error (0xee) is returned.
 The response is “CMSG_MEAS” (0x08).
 Tested: “CCMD_MEAS” response is “CMSG_MEAS” with weight and ADC count
+```
 <AA><E8><00><00><86><00><00><00><00><00><00><00><00><00><55>
 <AA><E8><00><00><08><01><C1><5C><15><81><FF><FF><CA><4C><55>
+```
 
-##### Command “CCMD_GET_TEMP”
-Command: aa 88 00 00 00 00 00 00 00 00 00 00
-Response: aa 09 00 00 tt tt tt tt 00 00 00 00
+#### Command “CCMD_GET_TEMP”
+Command: `aa 88 00 00 00 00 00 00 00 00 00 00`  
+Response: `aa 09 00 00 tt tt tt tt 00 00 00 00`  
 aa is the address, tttttttt is the temperature of the PCB in ⁰C as an IEEE float.
+
 Tested: “CCMD_GET_TEMP” and resulting “CMSG_GET_TEMP”.
+```
 <AA><E8><00><00><8C><00><00><00><00><00><00><00><00><00><55>
 <AA><E8><00><00><08><00><40><8A><98><00><00><00><00><00><55>
+```
 
-##### Command “CCMD_AUTOZERO”
+#### Command “CCMD_AUTOZERO”
 Command: aa 89 00 00 bb 00 00 00 00 00 00 00
 Response: aa 0A 00 00 bb 00 00 00 00 00 00 00
 aa is the address and bb is a Boolean value
@@ -254,40 +276,51 @@ Command executes, but have disabled functionality. Not functionally tested as of
 This command sets a Boolean value that instructs the unit to automatically rezero the scale
 every time a “lift” event is detected. The response is “CMSG_AUTOZERO” (0x0A).
 Tested: Command obtains response but internal function not debugged.
+```
 <AA><E8><00><00><89><00><00><01><00><00><00><00><00><00><55>
 <AA><E8><80><00><0B><00><00><01><00><00><00><00><00><00><55>
+```
 
-##### Command “CCMD_SETZERO”
+#### Command “CCMD_SETZERO”
 Command: aa 8A 00 00 zz zz zz zz 00 00 00 00
 Response: aa 0B 00 00 zz zz zz zz 00 00 00 00
 aa is the address, zzzzzzzz is the ADC count at zero
 This command manually sets the zero level ADC counts. The response is “CMSG_SETZERO”
 (0x0B).
 Tested: Set zero to -1
+```
 <AA><E8><00><00><8A><00><FF><FF><FF><FF><FF><00><00><00><55>
 <AA><E8><80><00><0C><00><FF><FF><FF><FF><FF><00><00><00><55>
+```
 Take Meas
+```
 <AA><E8><00><00><86><00><00><00><00><00><00><00><00><00><55>
 <AA><E8><00><00><08><00><C1><54><7A><66><FF><FF><CC><22><55>
+```
 Set zero to 0
+```
 <AA><E8><00><00><8A><00><00><00><00><00><01><00><00><00><55>
 <AA><E8><80><00><0C><00><00><00><00><00><01><00><00><00><55>
+```
 
-##### Command “CCMD_SETSCALE”
-Command: aa 8B 00 00 ss ss ss ss 00 00 00 00
-Response: aa 0C 00 00 ss ss ss ss 00 00 00 00
-aa is the address, sssssssss is the computed scale (IEEE float) in grams/ADC count.
+#### Command “CCMD_SETSCALE”
+Command: `aa 8B 00 00 ss ss ss ss 00 00 00 00`  
+Response: `aa 0C 00 00 ss ss ss ss 00 00 00 00`  
+`aa` is the address, `sssssssss` is the computed scale (IEEE float) in grams/ADC count.
 Might want to implement a second IEEE float quadratic value?
-Factory or expert use only.
+
+***Factory or expert use only.***
 This command manually sets the scale in grams/ADC count. The response is
-“CMSG_SETSCALE” (0x0D).
+`CMSG_SETSCALE` (0x0D).
 Tested: setting the scale sets the memory value (SRAM) and responds.  There is a
 spurious “LIFT” or “REPLACE” signal from the reset of scale.
+```
 <AA><E8><00><00><8B><00><3C><23><D7><0A><00><00><00><00><55>
 <AA><E8><00><00><0D><00><3C><23><D7><0A><00><00><00><00><55>
 <AA><E8><80><00><02><00><C1><56><7C><70><C3><06><26><66><55>
+```
 
-##### Message “CMSG_CURWEIGHT”
+#### Message “CMSG_CURWEIGHT”
 Response: aa 07 ee 00 ww ww ww ww dd dd dd dd
 aa is the address, wwwwwwww is the weight (IEEE float), in grams, dddddddd is the ADC count
 at zero, and ee is an error code if non-zero
@@ -299,6 +332,7 @@ This message is used internally between the automated measurement loop and the
 measurement task. It could be spontaneously emitted with additional firmware. It is sent as
 the response to a CCMD_MEAS command.
 Tested: can turn auto-weight on and off. When on, “CMSG_CURWEIGHT” is emitted.
+```
 <AA><E8><00><00><88><00><00><01><00><00><00><00><00><00><55>
 <AA><E8><00><00><0A><00><00><01><00><00><00><00><00><00><55>
 <AA><E8><80><00><07><00><C3><06><D0><D7><FF><FF><CB><5F><55>
@@ -310,15 +344,18 @@ Tested: can turn auto-weight on and off. When on, “CMSG_CURWEIGHT” is emitte
 <AA><E8><80><00><07><00><C3><06><D6><75><FF><FF><CB><4F><55>
 <AA><E8><00><00><88><00><00><00><00><00><00><00><00><00><55>
 <AA><E8><00><00><0A><00><00><00><00><00><00><00><00><00><55>
+```
 
-#### Event Messages (unimplemented and reserved for future use).
-##### Message “CMSG_LIFT”
+### Event Messages (unimplemented and reserved for future use).
+#### Message “CMSG_LIFT”
 Untested and unsupported – propose to detect and notify of a bottle lift (dispense).
 Preliminary code also tests the AutoZero bool and attempts to recalculate the zero level;
 however, this is untested. LIFT is associated with a -10g or larger weight change.
+```
 <AA><E8><00><00><02><00><41><87><AA><48><40><DA><15><FC><55>
+```
 
-##### Message “CMSG_REZERO”
+#### Message “CMSG_REZERO”
 Automatic rezeroing on LIFT is untested and unsupported – Upon retesting zero when a
 bottle lift (dispense) is detected, the result of rezeroing is transmitted. To be useful, need to
 NOT start Tare function until zero is settled and need to stop it before a 10g change!
@@ -326,4 +363,6 @@ Message “CMSG_REPLACE”
 Untested and unsupported – propose to detect and notify of a bottle replacement. This
 terminates an ongoing rezero and would be followed by the appropriate messages. REPLACE
 is associated with a +10g or larger weight change.
+```
 <AA><E8><80><00><04><00><BF><6F><3F><F6><41><14><3E><29><55>
+```
