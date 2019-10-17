@@ -25,9 +25,9 @@ The Besram CAN converter has a built-in 120Ω termination resistor. The last sca
 - Big endian
 
 ```
-address - [0 - 1    |2      |3     |4      |5      |       6 - 13          |14   ]
-meaning - [BOF/type  |MSID   |error |opcode |address|data (big endian)      |EOF  ]
-example - [0xAA 0xE8    |0x80   |0x00  |0x08   |0x01   |0x44 0x5D 0x59 0x0C... |0x55 ]
+address - [0     |1     |2     |3     |4     |5      |       6 - 13          |14   ]
+meaning - [BOF   |extd  |MSID  |error |opcode|address|data (big endian)      |EOF  ]
+example - [0xAA  |0xE8  |0x80  |0x00  |0x08  |0x01   |0x44 0x5D 0x59 0x0C... |0x55 ]
 ```
 
 At boot, each scale sends a CAN packet. The Besram CAN to USB adapter converts this to a
