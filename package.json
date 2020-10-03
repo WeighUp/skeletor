@@ -53,7 +53,7 @@
     "moment": "^2.24.0",
     "react": "^16.8.6",
     "react-blessed": "^0.6.1",
-    "serialport": "^7.1.5",
+    "serialport": "^9.0.1",
     "telnet2": "0.0.1"
   }
 }

@@ -5,6 +5,9 @@ import { render }           from 'react-blessed'
 import telnet             from 'telnet2'
 
 import SerialPort         from 'serialport'
+import Delimiter from '@serialport/parser-delimiter'
+import Regex from '@serialport/parser-regex'
+
 import axios              from 'axios'
 import moment             from 'moment'
 
@@ -21,18 +24,18 @@ import ScaleDetails      from './ScaleDetails'
 
 import stylesheet        from './styles'
 
-const WEIGHUP_SCALE_DEVICE_PATH = process.env.WEIGHUP_SCALE_DEVICE_PATH
+const WEIGHUP_SCALE_DEVICE_PATH = process.env.WEIGHUP_SCALE_DEVICE_PATH || '/dev/ttyUSB0'
 const WEIGHUP_API_URL           = process.env.WEIGHUP_API_URL
 const WEIGHUP_HUB_ID            = process.env.WEIGHUP_HUB_ID
 
-const screen = blessed.screen({
-  smartCSR: true,
-  title: 'WeighUp Scale Manager'
-})
-
-screen.key(['escape', 'q', 'C-c'], function(ch, key) {
-  return process.exit(0);
-})
+//const screen = blessed.screen({
+//  smartCSR: true,
+//  title: 'WeighUp Scale Manager'
+//})
+//
+//screen.key(['escape', 'q', 'C-c'], function(ch, key) {
+//  return process.exit(0);
+//})
 
 
 const connectSerialPort = (path, onData) => {
@@ -196,53 +199,58 @@ const App = () => {
 
 //render(<App />, screen)
 
-telnet({ tty: true }, function(client) {
-  client.on('term', function(terminal) {
-    screen.terminal = terminal;
-    render(<App />, screen);
-  });
-
-  client.on('size', function(width, height) {
-    client.columns = width;
-    client.rows = height;
-    client.emit('resize');
-  });
-
-  var screen = blessed.screen({
-    smartCSR: true,
-    input: client,
-    output: client,
-    terminal: 'xterm-256color',
-    fullUnicode: true
-  });
-
-  client.on('close', function() {
-    if (!screen.destroyed) {
-      screen.destroy();
-    }
-  });
-
-  screen.key(['C-c', 'q'], function(ch, key) {
-    screen.destroy();
-  });
-
-  screen.on('destroy', function() {
-    if (client.writable) {
-      client.destroy();
-    }
-  });
-
-
-}).listen(2300);
-
-//const port = new SerialPort(WEIGHUP_SCALE_DEVICE_PATH, {baudRate: 1228800})
+//telnet({ tty: true }, function(client) {
+//  client.on('term', function(terminal) {
+//    screen.terminal = terminal;
+//    render(<App />, screen);
+//  });
 //
-//port.on('data', serialData => {
+//  client.on('size', function(width, height) {
+//    client.columns = width;
+//    client.rows = height;
+//    client.emit('resize');
+//  });
 //
-//  console.log(`
-//****data received from serial port****
-//raw data:    : 0x${serialData.toString('hex')}
-//  `)
+//  var screen = blessed.screen({
+//    smartCSR: true,
+//    input: client,
+//    output: client,
+//    terminal: 'xterm-256color',
+//    fullUnicode: true
+//  });
+//
+//  client.on('close', function() {
+//    if (!screen.destroyed) {
+//      screen.destroy();
+//    }
+//  });
+//
+//  screen.key(['C-c', 'q'], function(ch, key) {
+//    screen.destroy();
+//  });
+//
+//  screen.on('destroy', function() {
+//    if (client.writable) {
+//      client.destroy();
+//    }
+//  });
+//
+//
+//}).listen(2300);
+
+const port = new SerialPort(WEIGHUP_SCALE_DEVICE_PATH, {baudRate: 9600})
+const parser = port.pipe(new Delimiter({ delimiter: '>', includeDelimiter : true }))
+
+
+parser.on('data', serialData => {
+
+  console.log(`
+****message received from serial port****
+raw msg (hex)    : 0x${serialData.toString('hex')}
+raw msg          :          ${serialData}
+parsed            : ${JSON.stringify(ScaleMessages.fromBytes(serialData), null, 2)}
+  `)
+})
 //
 //  const message = scaleMessages.fromBytes(serialData)
 //  scaleMessages.log(message)
@@ -268,11 +276,22 @@ telnet({ tty: true }, function(client) {
 ////)
 //
 //
-//port.write(
-//  scaleMessages.toBytes(
-//    scaleCommands.identify()
-//  )
-//)
+port.write(
+  Buffer.from(
+    ScaleMessages.toBytes(
+      ScaleCommands.getAddresses()
+    )
+  )
+)
+console.log('wrote to port')
+console.log(ScaleCommands.getAddresses())
+console.log(ScaleMessages.toBytes(ScaleCommands.getAddresses()))
+console.log(Buffer.from(ScaleMessages.toBytes(ScaleCommands.getAddresses())))
+
+setTimeout(() => {
+  console.log('drup')},
+ 15000
+)
 //
 //
 //port.write(

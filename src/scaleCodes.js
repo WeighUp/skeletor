@@ -1,36 +1,54 @@
-export const CMSG_ERROR = 0;
-export const CMSG_I_AM = 1;
-export const CMSG_LIFT = 2;
-export const CMSG_REZERO = 3;
-export const CMSG_REPLACE = 4;
-export const CMSG_TARE = 5;
-export const CMSG_SCALE = 6;
-export const CMSG_CURWEIGHT = 7;
-export const CMSG_MEAS = 8;
-export const CMSG_WR_FLSH = 9;
-export const CMSG_AUTOWGT = 0x0A;
-export const CMSG_AUTOZERO = 0x0B;
-export const CMSG_SETZERO = 0x0C;
-export const CMSG_SETSCALE = 0x0D;
-export const CMSG_GET_TEMP = 0x0E;
+//delimeters
+export const TAIL                 = '>' //0x3E
+export const HEAD                 = '<' //0x3C
 
-export const CCMD_REBOOT = 0x80;
-export const CCMD_IDENTIFY = 0x81;
-export const CCMD_YOU_ARE = 0x82;
-export const CCMD_SET_SERIAL = 0x83;
-export const CCMD_TARE = 0x84;
-export const CCMD_SCALE = 0x85;
-export const CCMD_MEAS = 0x86;
-export const CCMD_WR_FLSH = 0x87;
-export const CCMD_AUTOWGT = 0x88;
-export const CCMD_AUTOZERO = 0x89;
-export const CCMD_SETZERO = 0x8A;
-export const CCMD_SETSCALE = 0x8B;
-export const CCMD_GET_TEMP = 0x8C;
-export const CCMD_MAX = 0x8D;
+//command code chars
+export const SAMPLE_DEADLOAD      = 'E'
+export const SAMPLE_CALIBRATION   = 'F'
+export const RESET_CELL           = 'R'
+export const ZERO_CELL            = 'Z'
+export const START_CALIBRATION_MODE  = 'C'
+export const RESET_TO_DEFAULTS    = 'D'
+export const START_FACTORY_MODE   = '$'
+export const GET_CAPACITY         = 'Q'
+export const GET_CALIBRATION_VALUE  = 'O'
+export const GET_REVISION         = 'V'
+export const GET_WEIGHT           = 'W'
+export const GET_COUNTS           = 'Y'
+export const GET_SEED             = 'T'
+export const GET_GRADUATION_SIZE  = 'P'
+export const GET_UNIQUE_ID        = '?'
+export const SAVE_DEFAULTS        = 'H'
+export const START_NORMAL_MODE    = '#'
+export const SET_CAPACITY         = 'M'
+export const SET_CALIBRATION_VALUE  = 'B'
+export const SET_SEED             = 'S'
+export const SET_GRADUATION_SIZE  = 'G'
 
-export const EXTD_MSG = [0xAA, 0xE8]
-export const NO_VALUE = 0x00
-export const TERM     = 0x55
-export const NO_ERROR = 0x00
-export const ADDR_ALL = 0x00
+//command response chars
+export const SAMPLE_DEADLOAD_RESP      = 'e'
+export const SAMPLE_CALIBRATION_RESP   = 'f'
+export const RESET_CELL_RESP           = 'r'
+export const ZERO_CELL_RESP            = 'z'
+export const START_CALIBRATION_MODE_RESP  = 'c'
+export const RESET_TO_DEFAULTS_RESP    = 'd'
+export const START_FACTORY_MODE_RESP   = '$'
+export const GET_CAPACITY_RESP         = 'q'
+export const GET_CALIBRATION_VALUE_RESP  = 'o'
+export const GET_REVISION_RESP         = 'v'
+export const GET_WEIGHT_RESP           = 'w'
+export const GET_COUNTS_RESP           = 'y'
+export const GET_SEED_RESP             = 't'
+export const GET_GRAD_SIZE_RESP        = 'p'
+export const GET_UNIQUE_ID_RESP        = '?'
+export const SAVE_DEFAULTS_RESP        = 'h'
+export const START_NORMAL_MODE_RESP    = '#'
+export const SET_CAPACITY_RESP         = 'm'
+export const SET_CALIBRATION_VALUE_RESP  = 'b'
+export const SET_SEED_RESP             = 's'
+export const SET_GRADUATION_SIZE_RESP  = 'g'
+
+//addresses
+export const ADDR_DELIM    = '?'
+//                           ['?', 'A', 'D', 'D', 'R', '?']
+export const GET_ADDRESSES = [ADDR_DELIM, 'A', 'D', 'D', 'R', ADDR_DELIM]

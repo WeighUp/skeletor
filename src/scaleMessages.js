@@ -1,35 +1,136 @@
 import * as scaleCodes from './scaleCodes'
 
-export const toBytes = (message) => {
-  return Buffer.from([
-    ...message.prefix,
-    message.msidParam,
-    message.errorStatus,
-    message.opCode,
-    message.adddress,
-    ...message.payload,
-    message.term,
-  ])
-}
+export const scaleMessage = ({address, command, data}) => {
+  address = encodeAddress(address)
+  data    = encodeData(data)
 
-export const fromBytes = (serialData) => {
-  const prefix  = serialData.slice(0,2),
-        [
-          msidParam,
-          errorStatus,
-          opCode,
-          address,
-        ]              = serialData.slice(2, 6),
-        payload        = serialData.slice(6,14),
-        term           = serialData[14]
+  //command char + checksum value + tail = 3bytes so +3
+  const length = address.length + data.length + 3
 
   return {
-    prefix,
-    msidParam,
-    errorStatus,
-    opCode,
+    prefix : scaleCodes.HEAD,
+    length,
     address,
-    payload,
+    command,
+    data,
+    checksum : checksum({
+      length,
+      address,
+      command,
+      data,
+    }),
+    term  : scaleCodes.TAIL
+  }
+}
+
+export const encodeAddress = address => (
+  address.split('').map(char => char.charCodeAt(0))
+)
+
+export const decodeAddress = address => (
+  String.fromCharCode(...address)
+)
+
+export const encodeData = data => {
+  let dec = data % 1
+  if (dec)
+    data = data.toFixed(3)
+
+  else
+    data = data.toString()
+
+   return data.split('').map(char => char.charCodeAt(0))
+  //let [int, dec] = data.toString().split('.')
+
+  //int = int.map(digit => digit.charCodeAt(0))
+
+  //if (dec) {
+  //  dec = dec.toFixed(3)
+  //  dec = ['.', ...dec].map(d => d.charCodeAt(0))
+  //}
+
+  //return [...int, ...dec]
+}
+
+export const decodeData = data => (
+  parseFloat(String.fromCharCode(...data))
+)
+
+export const encodeIntData = int => (
+  int.toString().split('').map(digit => digit.charCodeAt(0))
+)
+
+export const decodeIntData = data => (
+  parseInt(String.fromCharCode(...data))
+)
+
+export const encodeFloatData = float => (
+  float.toFixed(3).split('').map(digit => digit.charCodeAt(0))
+)
+
+export const decodeFloatData = data => (
+  parseFloat(String.fromCharChode(...data))
+)
+
+export const checksum = ({
+  length,
+  address,
+  command,
+  data
+}) => {
+  let checksum = length;
+
+  [
+    ...address,
+    command,
+    ...data
+  ]
+  .map(chr => chr.charCodeAt(0))
+  .forEach(byte => { checksum ^= byte })
+
+  return checksum
+}
+
+export const toBytes = (message) => [
+    message.prefix,
+    message.length,
+    ...message.address,
+    message.command,
+    ...message.data,
+    message.checksum,
+    message.term,
+].filter(el => el).map(chr => chr.charCodeAt(0))
+//  return Buffer.from([
+//    ...message.prefix,
+//    message.length,
+//    message.address,
+//    message.command,
+//    ...message.data,
+//    msg.checksum,
+//    message.term,
+//  ])
+//}
+
+export const fromBytes = (serialData) => {
+    //serialData = String.fromCharCode(...serialData)
+
+    const
+    
+        prefix         = String.fromCharCode(serialData[0]),
+        length         = serialData[1],
+        address        = String.fromCharCode(...serialData.slice(2,6)),
+        command        = String.fromCharCode(serialData[6]),
+        data           = String.fromCharCode(...serialData.slice(7, serialData.length - 2)),
+        checksum       = serialData[serialData.length - 2],
+        term           = String.fromCharCode(serialData[serialData.length - 1])
+
+    return {
+        prefix,
+        length,
+    address,
+    command,
+    data,
+    checksum,
     term
   }
 }
