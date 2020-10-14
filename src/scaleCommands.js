@@ -1,4 +1,5 @@
 import * as ScaleCodes from './scaleCodes'
+import * as ScaleMessages from './scaleMessages'
 
 
 export const getAddresses = () => ({
@@ -8,21 +9,11 @@ export const getAddresses = () => ({
 })
 
   // set an address
-export const getWeight = () => {
- const _serialNumber = Buffer.alloc(4)
-  _serialNumber.writeUInt32BE(serialNumber)
-
-  return {
-    ...scaleCommandTemplate,
-    opCode: ScaleCodes.CCMD_YOU_ARE,
+export const getWeight = (address) => {
+  return ScaleMessages.scaleMessage({
     address,
-    payload: [
-      0x00,
-      newAddress,
-      ..._serialNumber,
-      0x00,
-      0x00,
-    ]
-  }
+    command : ScaleCodes.GET_WEIGHT,
+    data    : [],
+  })
 }
 

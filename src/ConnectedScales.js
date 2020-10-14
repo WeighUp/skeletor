@@ -38,7 +38,7 @@ const ConnectedScales = ({
     <listtable
       mouse={ true }
       keys={ true }
-        top={10}
+        top={7}
         height="50%"
 
         style={{
@@ -46,8 +46,8 @@ const ConnectedScales = ({
               selected: { fg: 'black', bg: 'magenta' },
             }}
       rows={[
-        ['Sequence #', 'Serial #'],
-        ...Object.values(connectedScales).map(scale => [scale.address.toString(), scale.serialNo.toString(16)])
+        ['Address'],
+        ...Object.values(connectedScales).map(scale => [scale.address.toString()])
       ]}
       onSelect={(scale, index) => {
           console.log(index)

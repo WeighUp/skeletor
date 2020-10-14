@@ -20,7 +20,7 @@ const ScaleDetails = ({
 
   return (
     <element
-      top={18}
+      top={20}
       left="50%"
       label={`Scale Details ${selectedScale ? `- ${selectedScale.address.toString(16)} - ${selectedScale.serialNo.toString(16)}` : ''}`}
       class={stylesheet.bordered}

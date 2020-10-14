@@ -1,11 +1,11 @@
 import * as scaleCodes from './scaleCodes'
 
 export const scaleMessage = ({address, command, data}) => {
-  address = encodeAddress(address)
-  data    = encodeData(data)
+//  address = encodeAddress(address)
+//  data    = encodeData(data)
 
   //command char + checksum value + tail = 3bytes so +3
-  const length = address.length + data.length + 3
+  const length = decodeAddress(address).length + data.length + 3
 
   return {
     prefix : scaleCodes.HEAD,
@@ -15,7 +15,7 @@ export const scaleMessage = ({address, command, data}) => {
     data,
     checksum : checksum({
       length,
-      address,
+      address: decodeAddress(address),
       command,
       data,
     }),
@@ -24,20 +24,31 @@ export const scaleMessage = ({address, command, data}) => {
 }
 
 export const encodeAddress = address => (
-  address.split('').map(char => char.charCodeAt(0))
+  address.map(byte => byte.toString(16).padStart(2, '0')).join('').toUpperCase()
 )
 
+//@address (String) - string of 8 hex digits
+//  representing the 4byte cell address
+//  ex '002FB58C'
 export const decodeAddress = address => (
-  String.fromCharCode(...address)
+  [...address].reduce((decoded, value, index, addr)=>{
+    if(index % 2 === 0) {
+      return [
+        ...decoded,
+        parseInt(addr.slice(index, index+2).join(''), 16)
+      ]
+    }
+    return decoded
+  }, [])
 )
 
 export const encodeData = data => {
   let dec = data % 1
   if (dec)
-    data = data.toFixed(3)
+    dec = dec.toString(16).slice(0,3)
 
-  else
-    data = data.toString()
+  
+    data = data.toString(16)
 
    return data.split('').map(char => char.charCodeAt(0))
   //let [int, dec] = data.toString().split('.')
@@ -49,11 +60,11 @@ export const encodeData = data => {
   //  dec = ['.', ...dec].map(d => d.charCodeAt(0))
   //}
 
-  //return [...int, ...dec]
+  return [...int, ...dec]
 }
 
 export const decodeData = data => (
-  parseFloat(String.fromCharCode(...data))
+  String.fromCharCode(...data)
 )
 
 export const encodeIntData = int => (
@@ -82,10 +93,11 @@ export const checksum = ({
 
   [
     ...address,
-    command,
-    ...data
+    ...[
+      command,
+      ...data
+    ].map(chr => chr.charCodeAt(0))
   ]
-  .map(chr => chr.charCodeAt(0))
   .forEach(byte => { checksum ^= byte })
 
   return checksum
@@ -94,12 +106,12 @@ export const checksum = ({
 export const toBytes = (message) => [
     message.prefix,
     message.length,
-    ...message.address,
+    ...(decodeAddress(message.address || [])),
     message.command,
-    ...message.data,
+    ...(message.data || []),
     message.checksum,
     message.term,
-].filter(el => el).map(chr => chr.charCodeAt(0))
+].filter(el => el !== undefined).map(chr => typeof chr === "string" ? chr.charCodeAt(0) : chr)
 //  return Buffer.from([
 //    ...message.prefix,
 //    message.length,
@@ -114,19 +126,19 @@ export const toBytes = (message) => [
 export const fromBytes = (serialData) => {
     //serialData = String.fromCharCode(...serialData)
 
-    const
+  const
     
         prefix         = String.fromCharCode(serialData[0]),
         length         = serialData[1],
-        address        = String.fromCharCode(...serialData.slice(2,6)),
+        address        = encodeAddress(serialData.slice(2,6)),
         command        = String.fromCharCode(serialData[6]),
         data           = String.fromCharCode(...serialData.slice(7, serialData.length - 2)),
         checksum       = serialData[serialData.length - 2],
         term           = String.fromCharCode(serialData[serialData.length - 1])
 
-    return {
-        prefix,
-        length,
+  return {
+    prefix,
+    length,
     address,
     command,
     data,
