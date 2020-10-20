@@ -16,7 +16,8 @@
     "build": "babel ./src -d ./dist --ignore \"src/**/*.spec.js\",\"src/**/*.test.js\"",
     "pretest": "npm run build",
     "test": "jest",
-    "test:watch": "npm run test -- --watchAll"
+    "test:watch": "npm run test -- --watchAll",
+    "rawdump": "NODE_ENV=development babel-node ./dist/rawdump.js"
   },
   "babel": {
     "presets": [
