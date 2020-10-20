@@ -159,23 +159,23 @@ const App = () => {
                         },
                       })
                       
-                      setInterval(()=>{
-                        port.write(
-                          Buffer.from(
-                            ScaleMessages.toBytes(
-                              ScaleCommands.getWeight(message.data)
-                              )
-                          )
-                        )
+                      //setInterval(()=>{
+                      //  port.write(
+                      //    Buffer.from(
+                      //      ScaleMessages.toBytes(
+                      //        ScaleCommands.getWeight(message.data)
+                      //        )
+                      //    )
+                      //  )
 
-                        dispatch({
-                          type: 'messageSent',
-                          payload: {
-                            message:
-                              ScaleCommands.getWeight(message.data)
-                          }
-                        })
-                      }, 1000)
+                      //  dispatch({
+                      //    type: 'messageSent',
+                      //    payload: {
+                      //      message:
+                      //        ScaleCommands.getWeight(message.data)
+                      //    }
+                      //  })
+                      //}, 1000)
                     }
                   }
                 )

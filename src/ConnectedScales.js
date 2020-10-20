@@ -54,7 +54,7 @@ const ConnectedScales = ({
           console.log(connectedScales)
           dispatch({
             type: 'scaleSelected',
-            //index-1 because tablelist uses first index for column headers durp
+            //index-1 because listtable uses first index for column headers durp
             payload: {selectedScale: Object.values(connectedScales)[index-1]}
           })
       }}
