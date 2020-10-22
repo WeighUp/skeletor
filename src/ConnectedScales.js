@@ -10,16 +10,16 @@ import stylesheet   from './styles'
 
 const ConnectedScales = ({
   refreshScales,
+  ...rest,
 }) => {
   const [{connectedScales}, dispatch] = useContext(Context)
 
   return(
 
-    <element 
-      top={18}
-      width="50%"
+    <box 
       class={stylesheet.bordered}
       label="Connected Scales"
+      {...rest}
     >
 
     <button
@@ -29,6 +29,8 @@ const ConnectedScales = ({
       mouse
       height={3}
       width={9}
+      top="100%-5"
+      left="100%-11"
       class={stylesheet.bordered}
 
     >
@@ -59,7 +61,7 @@ const ConnectedScales = ({
           })
       }}
     />
-    </element>
+    </box>
     )
 }
 

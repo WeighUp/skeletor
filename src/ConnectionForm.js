@@ -8,7 +8,12 @@ import Context      from './Context'
 import stylesheet from './styles'
 
 
-const ConnectionForm = ({onSubmit, onDisconnect, connected}) => {
+const ConnectionForm = ({
+  onSubmit,
+  onDisconnect,
+  connected,
+  ...rest,
+}) => {
   let [
     state,
     dispatch
@@ -17,23 +22,24 @@ const ConnectionForm = ({onSubmit, onDisconnect, connected}) => {
   const formRef = useRef(null)
 
     return(
+      <box
+        {...rest}
+      >
       <form
         ref={formRef}
         keys
-        left="0%"
-        width="50%"
         onSubmit={onSubmit}
       >
 
         <textbox
           name="devicePath"
           height={3}
-          width="80%"
+          width="100%-12"
           keys
           mouse
           inputOnFocus
           class={stylesheet.bordered}
-          label={`${state.port} Device Path/Identifier`}
+          label={`Device Path/Identifier${connected ? " (Connected)" : ""}`}
           onSubmit={ devicePath => {dispatch({type: 'setDevicePath', payload: {devicePath}})}}
         />
         { !connected &&
@@ -45,7 +51,7 @@ const ConnectionForm = ({onSubmit, onDisconnect, connected}) => {
             height={3}
             width={9}
             class={stylesheet.bordered}
-            left="80%"
+            left="100%-9"
 
           >
            Connect
@@ -60,13 +66,14 @@ const ConnectionForm = ({onSubmit, onDisconnect, connected}) => {
             height={3}
             width={12}
             class={stylesheet.bordered}
-            left="80%"
+            left="100%-12"
 
           >
            Disconnect
           </button>
         }
       </form>
+        </box>
     )
 }
 

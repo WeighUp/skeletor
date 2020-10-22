@@ -35,7 +35,10 @@ export const decodeAddress = address => (
     if(index % 2 === 0) {
       return [
         ...decoded,
-        parseInt(addr.slice(index, index+2).join(''), 16)
+        parseInt(
+          addr.slice(index, index+2).join(''),
+          16
+        )
       ]
     }
     return decoded

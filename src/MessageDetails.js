@@ -8,16 +8,14 @@ import * as ScaleMessages from './scaleMessages'
 
 import stylesheet from './styles'
 
-const MessageDetails = () => {
+const MessageDetails = ({...rest}) => {
   const [{selectedMessage}, dispatch] = useContext(Context)
 
   return(
     <box
-     top={3}
-    height={15}
-    left="50%"
     label="Message Details"
     class={stylesheet.bordered}
+    {...rest}
     >
       { selectedMessage &&
 `Raw: ${ScaleMessages.toBytes(selectedMessage.message).toString('hex')}

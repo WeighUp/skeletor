@@ -128,14 +128,16 @@ const App = () => {
     return (
 
     <Context.Provider value={[state, dispatch]}>
-  <element
+  <box
     top="0%"
     left="0%"
     width="100%"
     height="100%"
-    class={stylesheet.bordered}
+    //class={stylesheet.bordered}
   >
         <ConnectionForm
+          width="100%"
+          height={4}
           connected={port}
           onSubmit={
             formData => {
@@ -190,23 +192,13 @@ const App = () => {
             dispatch({type: 'portDisconnected'})
           }}
         />
-        <MessageList label="Incoming Messages"
-      top={3}
-      height={8}
-      width="50%"
-      items={state.incomingScaleMessages.map((msg, index) => `${index} - ${ScaleMessages.toBytes(msg.message).map(el => el.toString(16))}`)}
-      onSelect={(msg, index) => dispatch({type: 'messageSelected', payload: {selectedMessage: state.scaleMessages[index]}})}
-        />
-        <MessageList label="Outgoing Messages"
-          top={11}
-          height={8}
-          width="50%"
-    items={state.outgoingScaleMessages.map((msg, index) => `${index} - ${ScaleMessages.toBytes(msg.message).map(el => el.toString(16))}`)}
-    onSelect={(msg, index) => dispatch({type: 'messageSelected', payload: {selectedMessage: state.scaleMessages[index]}})}
-        />
+        <box height="100%-3" top={3}>
 
-        <MessageDetails />
         <ConnectedScales
+          top={0}
+          width="50%"
+          height="30%"
+
           refreshScales={()=> {
             if(port) {
               dispatch({type: 'dropScaleList'})
@@ -228,7 +220,25 @@ const App = () => {
             }
           }}
         />
+        <MessageList label="Incoming Messages"
+      top="30%"
+      height="35%"
+      width="50%"
+      items={state.incomingScaleMessages.map((msg, index) => `${index} - ${ScaleMessages.toBytes(msg.message).map(el => el.toString(16))}`)}
+      onSelect={(msg, index) => dispatch({type: 'messageSelected', payload: {selectedMessage: state.scaleMessages[index]}})}
+        />
+        <MessageList label="Outgoing Messages"
+          top="65%"
+          height="35%"
+          width="50%"
+    items={state.outgoingScaleMessages.map((msg, index) => `${index} - ${ScaleMessages.toBytes(msg.message).map(el => el.toString(16))}`)}
+    onSelect={(msg, index) => dispatch({type: 'messageSelected', payload: {selectedMessage: state.scaleMessages[index]}})}
+        />
+
         <ScaleDetails
+          top={0}
+          left="50%"
+          height="50%"
           youAreSubmit={(address, newAddress, serialNo)=> {
             if(port) {
               port.write(
@@ -259,9 +269,14 @@ const App = () => {
             }
           }}
         />
+        <MessageDetails
+          top="50%"
+          left="50%"
+          height="50%"
+        />
+</box>
 
-
-  </element>
+  </box>
     </Context.Provider>
   )
 }
