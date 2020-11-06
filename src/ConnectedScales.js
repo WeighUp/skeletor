@@ -2,17 +2,34 @@ import React,
        {
          useContext,
          useState,
+         useCallback,
+         useRef,
+         useEffect
        }            from 'react'
 
 import Context      from './Context'
 
+import { Table }    from 'react-blessed-contrib'
+
 import stylesheet   from './styles'
 
 const ConnectedScales = ({
-  refreshScales,
   ...rest,
 }) => {
-  const [{connectedScales}, dispatch] = useContext(Context)
+  const [{scales: {connectedScales}}, dispatch] = useContext(Context)
+
+  const connectedScalesRef = useRef(connectedScales)
+  connectedScalesRef.current = connectedScales
+  const table = useCallback(table => {
+    if(table) {
+      table.widget.rows.on('select', (item, index) => {
+        dispatch({
+          type: 'scaleSelected',
+          payload: {selectedScale: Object.values(connectedScalesRef.current)[index]}
+        })
+      })
+    }
+  }, [])
 
   return(
 
@@ -37,29 +54,24 @@ const ConnectedScales = ({
       Refresh
     </button>
 
-    <listtable
+    <Table
+      ref={table}
+      label="Connected Scales"
       mouse={ true }
       keys={ true }
-        top={7}
-        height="50%"
+      interactive={true}
+        top={0}
+        height="100%-2"
 
-        style={{
-              item: { fg: 'magenta' },
-              selected: { fg: 'black', bg: 'magenta' },
-            }}
-      rows={[
-        ['Address'],
-        ...Object.values(connectedScales).map(scale => [scale.address.toString()])
-      ]}
-      onSelect={(scale, index) => {
-          console.log(index)
-          console.log(connectedScales)
-          dispatch({
-            type: 'scaleSelected',
-            //index-1 because listtable uses first index for column headers durp
-            payload: {selectedScale: Object.values(connectedScales)[index-1]}
-          })
+        //style={{
+        //      item: { fg: 'magenta' },
+        //      selected: { fg: 'black', bg: 'magenta' },
+        //    }}
+      data={{
+        headers: ['Address'],
+        data: Object.values(connectedScales).map(scale => [scale.address.toString()])
       }}
+      columnWidth={[10]}
     />
     </box>
     )
