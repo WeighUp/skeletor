@@ -4,7 +4,7 @@ import React,
          useState,
          useCallback,
          useRef,
-         useEffect
+         useMemo,
        }            from 'react'
 
 import Context      from './Context'
@@ -31,7 +31,7 @@ const ConnectedScales = ({
     }
   }, [])
 
-  return(
+  return useMemo(() => (
 
     <box 
       class={stylesheet.bordered}
@@ -74,7 +74,7 @@ const ConnectedScales = ({
       columnWidth={[10]}
     />
     </box>
-    )
+    ),[connectedScales])
 }
 
 export default ConnectedScales

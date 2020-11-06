@@ -8,8 +8,7 @@ import * as ScaleMessages from './scaleMessages'
 
 import stylesheet from './styles'
 
-const MessageList = (props) => {
-  const [state, dispatch] = useContext(Context)
+const MessageList = React.memo((props) => {
 
   return <list
     class={stylesheet.bordered}
@@ -24,6 +23,6 @@ const MessageList = (props) => {
 
       {...props}
     />
-}
+})
 
 export default MessageList

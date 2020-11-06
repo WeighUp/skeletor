@@ -2,6 +2,7 @@ import React,
        {
          useContext,
          useState,
+         useMemo,
        }            from 'react'
 
 import Context      from './Context'
@@ -19,13 +20,16 @@ const ScaleDetails = ({
   const [newAddress, setNewAddress] = useState(null)
   const [serial,     setSerial    ] = useState(null)
 
-  if(!selectedScale) return <box class={stylesheet.bordered} {...rest}/>
 
-  selectedScale = connectedScales[selectedScale.address]
 
-  let messages = scaleMessages.incoming.filter(msg => (msg.message.address === selectedScale.address || msg.message.data === selectedScale.address))
-  return (
-    <box
+  return useMemo(() => {
+    if(!selectedScale) return <box class={stylesheet.bordered} {...rest}/>
+  
+    selectedScale = connectedScales[selectedScale.address]
+  
+    let messages = scaleMessages.incoming.filter(msg => (msg.message.address === selectedScale.address || msg.message.data === selectedScale.address))
+    
+    return (<box
       label={`Scale Details ${selectedScale ? `- ${selectedScale.address.toString(16)}` : ''}`}
       class={stylesheet.bordered}
       {...rest}
@@ -82,7 +86,8 @@ const ScaleDetails = ({
       />
 
     </box>
-  )
+    )
+  }, [connectedScales])
 }
 
 export default ScaleDetails
