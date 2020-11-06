@@ -1,6 +1,9 @@
-import React, { useReducer }  from 'react'
-import blessed              from 'neo-blessed'
-import { render }           from 'react-blessed'
+import React, {
+  useReducer,
+  useMemo
+}                         from 'react'
+import blessed            from 'neo-blessed'
+import { render }         from 'react-blessed'
 
 import telnet             from 'telnet2'
 
@@ -16,6 +19,8 @@ import * as ScaleCommands from './scaleCommands'
 import * as ScaleMessages from './scaleMessages'
 
 import Context           from './Context'
+import {reducer, initialState} from './reducer'
+
 import ConnectionForm    from './ConnectionForm'
 import MessageList       from './MessageList'
 import MessageDetails    from './MessageDetails'
@@ -40,7 +45,7 @@ screen.key(['escape', 'q', 'C-c'], function(ch, key) {
 //parser.on('data', serialData => {
 
 //  console.log(`
-//****message received from serial port****
+//****message received from serial serialPort****
 //raw msg (hex)    : 0x${serialData.toString('hex')}
 //raw msg          :          ${serialData}
 //parsed            : ${JSON.stringify(ScaleMessages.fromBytes(serialData), null, 2)}
@@ -48,12 +53,12 @@ screen.key(['escape', 'q', 'C-c'], function(ch, key) {
 //})
 
 const connectSerialPort = (path, onData) => {
-  //const port = new SerialPort(path, {baudRate: 1228800})
-  const port = new SerialPort(path, {baudRate: 9600})
-  const parser = port.pipe(new Delimiter({ delimiter: '>', includeDelimiter : true }))
+  //const serialPort = new SerialPort(path, {baudRate: 1228800})
+  const serialPort = new SerialPort(path, {baudRate: 9600})
+  const parser = serialPort.pipe(new Delimiter({ delimiter: '>', includeDelimiter : true }))
   parser.on('data', onData)
 
-  port.write(
+  serialPort.write(
     Buffer.from(
       ScaleMessages.toBytes(
         ScaleCommands.getAddresses()
@@ -61,69 +66,21 @@ const connectSerialPort = (path, onData) => {
     )
   )
 
-  return port
+  return serialPort
 }
 
-const initialState = {
-  incomingScaleMessages : [],
-  outgoingScaleMessages : [],
-  selectedMessage       : null,
-  connectedScales       : {},
-  selectedScale         : null,
-  devicePath            : null,
-  port                  : null,
-}
-
-const reducer = (state, {type, payload}) => {
-  switch(type) {
-    case 'setDevicePath':
-      return {...state, ...payload}
-    case 'portConnected':
-      return {...state, ...payload}
-    case 'portDisconnected':
-      return {...state, port: null}
-    case 'scaleConnected':
-      return {
-        ...state,
-        connectedScales: {
-          ...state.connectedScales,
-          [payload.address]: payload,
-        }
-      }
-    case 'dropScaleList':
-      return {...state, connectedScales: {}}
-    case 'scaleSelected':
-      return {...state, ...payload}
-    case 'messageReceived':
-      return {
-        ...state,
-        incomingScaleMessages: [
-          ...state.incomingScaleMessages,
-          payload,
-        ],
-      }
-    case 'messageSent':
-      return {
-        ...state,
-        outgoingScaleMessages: [
-          ...state.outgoingScaleMessages,
-          payload,
-        ],
-      }
-    case 'messageSelected':
-      return {
-        ...state,
-        ...payload
-      }
-    default:
-      return state
-  }
-}
 
 const App = () => {
-    let [state, dispatch] = useReducer(reducer, initialState)
+    const [state, dispatch] = useReducer(reducer, initialState)
 
-    let {port, scaleMessages, devicePath} = state
+    //const contextVal = useMemo(()=>{return [state, dispatch]}, [state, dispatch])
+    let {
+        serialConnection : {
+        serialPort,
+        devicePath,
+      },
+      scales : { connectedScales }
+    } = state
 
     return (
 
@@ -138,21 +95,25 @@ const App = () => {
         <ConnectionForm
           width="100%"
           height={4}
-          connected={port}
+          connected={serialPort}
           onSubmit={
             formData => {
-              if(!port && devicePath) {
-                port = connectSerialPort(
+              if(!serialPort && devicePath) {
+                serialPort = connectSerialPort(
                   devicePath,
                   data => {
+                    const readingTime = moment()
+
                     const message = ScaleMessages.fromBytes(data)
+
                     dispatch({
                       type: 'messageReceived',
                       payload: {
                         message,
-                        readingTime: moment(),
+                        readingTime,
                       }
                     })
+
                     if (message.address == ScaleMessages.encodeAddress([0x61, 0x64, 0x64, 0x72])) {
                       dispatch({
                         type: 'scaleConnected',
@@ -160,36 +121,52 @@ const App = () => {
                           address: message.data,
                         },
                       })
-                      
-                      //setInterval(()=>{
-                      //  port.write(
-                      //    Buffer.from(
-                      //      ScaleMessages.toBytes(
-                      //        ScaleCommands.getWeight(message.data)
-                      //        )
-                      //    )
-                      //  )
 
-                      //  dispatch({
-                      //    type: 'messageSent',
-                      //    payload: {
-                      //      message:
-                      //        ScaleCommands.getWeight(message.data)
-                      //    }
-                      //  })
-                      //}, 1000)
+                      let getWeightInterval = setInterval(()=>{
+                       // if (!connectedScales[message.data]) {
+                       //   clearInterval(getWeightInterval)
+                       //   return
+                       // }
+
+                        serialPort.write(
+                          Buffer.from(
+                            ScaleMessages.toBytes(
+                              ScaleCommands.getWeight(message.data)
+                              )
+                          )
+                        )
+
+                        dispatch({
+                          type: 'messageSent',
+                          payload: {
+                            message:
+                              ScaleCommands.getWeight(message.data)
+                          }
+                        })
+                      }, 1000)
+                    }
+
+                    if (message.command === ScaleCodes.GET_WEIGHT_RESP) {
+                      dispatch({
+                        type: 'measurementRead',
+                        payload: {
+                          address: message.address,
+                          measurement: message.data,
+                          readingTime
+                        }
+                      })
                     }
                   }
                 )
 
-                dispatch({type: 'portConnected', payload: {port}})
+                dispatch({type: 'serialPortConnected', payload: {serialPort}})
               }
             }
           }
 
           onDisconnect={() => {
-            port.close()
-            dispatch({type: 'portDisconnected'})
+            serialPort.close()
+            dispatch({type: 'serialPortDisconnected'})
           }}
         />
         <box height="100%-3" top={3}>
@@ -200,9 +177,9 @@ const App = () => {
           height="30%"
 
           refreshScales={()=> {
-            if(port) {
+            if(serialPort) {
               dispatch({type: 'dropScaleList'})
-              port.write(
+              serialPort.write(
                 Buffer.from(
                   ScaleMessages.toBytes(
                     ScaleCommands.getAddresses()
@@ -224,14 +201,14 @@ const App = () => {
       top="30%"
       height="35%"
       width="50%"
-      items={state.incomingScaleMessages.map((msg, index) => `${index} - ${ScaleMessages.toBytes(msg.message).map(el => el.toString(16))}`)}
+      items={state.scaleMessages.incoming.map((msg, index) => `${index} - ${ScaleMessages.toBytes(msg.message).map(el => el.toString(16))}`)}
       onSelect={(msg, index) => dispatch({type: 'messageSelected', payload: {selectedMessage: state.scaleMessages[index]}})}
         />
         <MessageList label="Outgoing Messages"
           top="65%"
           height="35%"
           width="50%"
-    items={state.outgoingScaleMessages.map((msg, index) => `${index} - ${ScaleMessages.toBytes(msg.message).map(el => el.toString(16))}`)}
+    items={state.scaleMessages.outgoing.map((msg, index) => `${index} - ${ScaleMessages.toBytes(msg.message).map(el => el.toString(16))}`)}
     onSelect={(msg, index) => dispatch({type: 'messageSelected', payload: {selectedMessage: state.scaleMessages[index]}})}
         />
 
@@ -239,35 +216,6 @@ const App = () => {
           top={0}
           left="50%"
           height="50%"
-          youAreSubmit={(address, newAddress, serialNo)=> {
-            if(port) {
-              port.write(
-                ScaleMessages.toBytes(
-                  ScaleCommands.youAre(address, newAddress, serialNo)
-                )
-              )
-            }
-          }}
-
-          setSerialSubmit={(address, serialNo)=> {
-            if(port) {
-              port.write(
-                ScaleMessages.toBytes(
-                  ScaleCommands.setSerial(address, serialNo)
-                )
-              )
-            }
-          }}
-
-          writeFlashSubmit={(address, serialNo)=> {
-            if(port) {
-              port.write(
-                ScaleMessages.toBytes(
-                  ScaleCommands.writeFlash(address, serialNo)
-                )
-              )
-            }
-          }}
         />
         <MessageDetails
           top="50%"
@@ -322,8 +270,8 @@ render(<App />, screen)
 //
 //}).listen(2300);
 
-//const port = new SerialPort(WEIGHUP_SCALE_DEVICE_PATH, {baudRate: 9600})
-//const parser = port.pipe(new Delimiter({ delimiter: '>', includeDelimiter : true }))
+//const serialPort = new SerialPort(WEIGHUP_SCALE_DEVICE_PATH, {baudRate: 9600})
+//const parser = serialPort.pipe(new Delimiter({ delimiter: '>', includeDelimiter : true }))
 
 
 //
@@ -344,7 +292,7 @@ render(<App />, screen)
 //  }
 //})
 //
-////port.write(
+////serialPort.write(
 ////  scaleMessages.toBytes(
 ////    scaleCommands.reboot()
 ////  )
@@ -354,14 +302,14 @@ render(<App />, screen)
 
 
 
-//port.write(
+//serialPort.write(
 //  Buffer.from(
 //    ScaleMessages.toBytes(
 //      ScaleCommands.getAddresses()
 //    )
 //  )
 //)
-//console.log('wrote to port')
+//console.log('wrote to serialPort')
 //console.log(ScaleCommands.getAddresses())
 //console.log(ScaleMessages.toBytes(ScaleCommands.getAddresses()))
 ///console.log(Buffer.from(ScaleMessages.toBytes(ScaleCommands.getAddresses())))
@@ -372,26 +320,26 @@ render(<App />, screen)
 //)
 //
 //
-//port.write(
+//serialPort.write(
 //  scaleMessages.toBytes(
 //    scaleCommands.setZero(0, 0x0001f38e)
 //  )
 //)
 //
-//  port.write(
+//  serialPort.write(
 //    scaleMessages.toBytes(
 //      scaleCommands.tare(0, 0x0003)
 //    )
 //  )
 //
 //
-//port.write(
+//serialPort.write(
 //  scaleMessages.toBytes(
 //    scaleCommands.setScale(0, 0.00191)
 //  )
 //)
 //
-////port.write(
+////serialPort.write(
 ////  scaleMessages.toBytes(
 ////    scaleCommands.setZero(0, 0)
 ////  )
@@ -402,7 +350,7 @@ render(<App />, screen)
 //setTimeout(() => {
 //  console.log('measure!')
 //
-//  port.write(
+//  serialPort.write(
 //    scaleMessages.toBytes(scaleCommands.measure(0x0))
 //  )
 //
