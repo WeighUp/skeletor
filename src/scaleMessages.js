@@ -24,7 +24,7 @@ export const scaleMessage = ({address, command, data}) => {
 }
 
 export const encodeAddress = address => (
-  address.map(byte => byte.toString(16).padStart(2, '0')).join('').toUpperCase()
+  address.map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase()
 )
 
 //@address (String) - string of 8 hex digits
@@ -62,8 +62,8 @@ export const encodeData = data => {
   //  dec = dec.toFixed(3)
   //  dec = ['.', ...dec].map(d => d.charCodeAt(0))
   //}
-
-  return [...int, ...dec]
+  //
+  //return [...int, ...dec]
 }
 
 export const decodeData = data => (
@@ -130,10 +130,9 @@ export const fromBytes = (serialData) => {
     //serialData = String.fromCharCode(...serialData)
 
   const
-    
         prefix         = String.fromCharCode(serialData[0]),
         length         = serialData[1],
-        address        = encodeAddress(serialData.slice(2,6)),
+        address        = encodeAddress([...serialData.slice(2,6)]),
         command        = String.fromCharCode(serialData[6]),
         data           = String.fromCharCode(...serialData.slice(7, serialData.length - 2)),
         checksum       = serialData[serialData.length - 2],
