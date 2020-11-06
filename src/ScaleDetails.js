@@ -6,38 +6,68 @@ import React,
 
 import Context      from './Context'
 
+import * as sm from './scaleMessages'
+
 import stylesheet   from './styles'
 
 const ScaleDetails = ({
-  youAreSubmit,
-  setSerialSubmit,
-  writeFlashSubmit,
   ...rest
 }) => {
-  const [{selectedScale}, dispatch] = useContext(Context)
+  let [{scales: {selectedScale, connectedScales}, scaleMessages}, dispatch] = useContext(Context)
+
 
   const [newAddress, setNewAddress] = useState(null)
   const [serial,     setSerial    ] = useState(null)
 
+  if(!selectedScale) return <box class={stylesheet.bordered} {...rest}/>
+
+  selectedScale = connectedScales[selectedScale.address]
+
+  let messages = scaleMessages.incoming.filter(msg => (msg.message.address === selectedScale.address || msg.message.data === selectedScale.address))
   return (
     <box
       label={`Scale Details ${selectedScale ? `- ${selectedScale.address.toString(16)}` : ''}`}
       class={stylesheet.bordered}
       {...rest}
+
     >
-      
-      <listtable
+
+      <box 
+        top={3}
+        width="100%-2"
+        height={5}
+        class={stylesheet.bordered}
+        label="Calibration"
+      >
+       <button
+         name=""
+         onPress={() => {
+         }}
+         keys
+         mouse
+         height={3}
+         width={18}
+         left="100%-20"
+         class={stylesheet.bordered}
+       >
+        Calibration Mode
+       </button>
+      </box>
+      <list
         mouse={ true }
         keys={ true }
-        top={7}
+        top="50%"
         height="50%"
 
         style={{
               item: { fg: 'magenta' },
               selected: { fg: 'black', bg: 'magenta' },
             }}
-        rows={
-          Object.entries(selectedScale || {})
+        items={
+          //['Reading Time', 'Measurement'],
+          //["time" , "meas"]
+          //...(selectedScale.measurements.map(m => ["time", "sdg"]))
+          selectedScale.measurements.map(m => `${m.readingTime.toString()}, ${m.measurement.toString()}`)
         }
 
         onSelect={(scale, index) => {
@@ -50,32 +80,6 @@ const ScaleDetails = ({
           //})
         }}
       />
-      <element 
-        top={3}
-        width="96%"
-        height={5}
-        class={stylesheet.bordered}
-        label="Calibration"
-      >
-       <button
-         name=""
-         onPress={() => {
-           youAreSubmit(
-             selectedScale.address,
-             parseInt(newAddress, 16),
-             parseInt(serial, 16)
-           )
-         }}
-         keys
-         mouse
-         height={3}
-         width={14}
-         left={36}
-         class={stylesheet.bordered}
-       >
-        Calibration Mode
-       </button>
-      </element>
 
     </box>
   )
