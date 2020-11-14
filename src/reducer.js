@@ -1,8 +1,12 @@
 import combineReducers from 'react-combine-reducers'
 
+const MEASUREMENT_LIMIT = 50
+const MESSAGE_LIMIT     = 50
+
 const newScale = {
   address : '',
-  measurements: []
+  measurements: [],
+  capacity: 0,
 }
 
 const defaultState = {
@@ -42,7 +46,24 @@ const scales = (scales, {type, payload}) => {
           ...scales.connectedScales,
           [payload.address] : {
             ...scales.connectedScales[payload.address],
-            measurements: [...scales.connectedScales[payload.address].measurements, {measurement: payload.measurement, readingTime: payload.readingTime}]
+            measurements: [
+              ...scales.connectedScales[payload.address].measurements,
+              {
+                measurement: payload.measurement,
+                readingTime: payload.readingTime
+              }
+            ].slice(-MEASUREMENT_LIMIT)
+          }
+        }
+      }
+    case 'capacityRead':
+      return {
+        ...scales,
+        connectedScales: {
+          ...scales.connectedScales,
+          [payload.address] : {
+            ...scales.connectedScales[payload.address],
+            capacity: payload.capacity,
           }
         }
       }
@@ -59,7 +80,7 @@ const scaleMessages = (state = {}, {type, payload}) => {
         incoming: [
           ...state.incoming,
           payload,
-        ],
+        ].slice(-MESSAGE_LIMIT),
       }
     case 'messageSent':
       return {
@@ -67,7 +88,7 @@ const scaleMessages = (state = {}, {type, payload}) => {
         outgoing: [
           ...state.outgoing,
           payload,
-        ],
+        ].slice(-MESSAGE_LIMIT),
       }
     case 'messageSelected':
       return {

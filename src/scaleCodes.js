@@ -47,6 +47,7 @@ export const SET_CAPACITY_RESP         = 'm'
 export const SET_CALIBRATION_VALUE_RESP  = 'b'
 export const SET_SEED_RESP             = 's'
 export const SET_GRADUATION_SIZE_RESP  = 'g'
+export const GET_ADDRESSES_RESP        = '?'
 
 //addresses
 export const ADDR_DELIM    = '?'

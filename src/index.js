@@ -18,6 +18,8 @@ import * as ScaleCodes    from './scaleCodes'
 import * as ScaleCommands from './scaleCommands'
 import * as ScaleMessages from './scaleMessages'
 
+import { messageHandler}  from './messageHandler'
+
 import Context           from './Context'
 import {reducer, initialState} from './reducer'
 
@@ -102,63 +104,13 @@ const App = () => {
                 serialPort = connectSerialPort(
                   devicePath,
                   data => {
-                    const readingTime = moment()
-
-                    const message = ScaleMessages.fromBytes(data)
-
-                    dispatch({
-                      type: 'messageReceived',
-                      payload: {
-                        message,
-                        readingTime,
-                      }
+                    messageHandler({
+                      dispatch,
+                      serialPort,
+                      data,
                     })
-
-                    if (message.address == ScaleMessages.encodeAddress([0x61, 0x64, 0x64, 0x72])) {
-                      dispatch({
-                        type: 'scaleConnected',
-                        payload: {
-                          address: message.data,
-                        },
-                      })
-
-                      let getWeightInterval = setInterval(()=>{
-                       // if (!connectedScales[message.data]) {
-                       //   clearInterval(getWeightInterval)
-                       //   return
-                       // }
-
-                        serialPort.write(
-                          Buffer.from(
-                            ScaleMessages.toBytes(
-                              ScaleCommands.getWeight(message.data)
-                              )
-                          )
-                        )
-
-                        dispatch({
-                          type: 'messageSent',
-                          payload: {
-                            message:
-                              ScaleCommands.getWeight(message.data)
-                          }
-                        })
-                      }, 1000)
-                    }
-
-                    if (message.command === ScaleCodes.GET_WEIGHT_RESP) {
-                      dispatch({
-                        type: 'measurementRead',
-                        payload: {
-                          address: message.address,
-                          measurement: message.data,
-                          readingTime
-                        }
-                      })
-                    }
                   }
                 )
-
                 dispatch({type: 'serialPortConnected', payload: {serialPort}})
               }
             }
