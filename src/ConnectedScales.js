@@ -4,7 +4,7 @@ import React,
          useState,
          useCallback,
          useRef,
-         useMemo,
+         useEffect
        }            from 'react'
 
 import Context      from './Context'
@@ -14,7 +14,7 @@ import { Table }    from 'react-blessed-contrib'
 import stylesheet   from './styles'
 
 const ConnectedScales = ({
-  ...rest,
+  ...rest
 }) => {
   const [{scales: {connectedScales}}, dispatch] = useContext(Context)
 
@@ -31,7 +31,7 @@ const ConnectedScales = ({
     }
   }, [])
 
-  return useMemo(() => (
+  return(
 
     <box 
       class={stylesheet.bordered}
@@ -60,8 +60,9 @@ const ConnectedScales = ({
       mouse={ true }
       keys={ true }
       interactive={true}
-        top={0}
-        height="100%-2"
+      top={0}
+      height="100%-2"
+      width="100%-9"
 
         //style={{
         //      item: { fg: 'magenta' },
@@ -74,7 +75,7 @@ const ConnectedScales = ({
       columnWidth={[10]}
     />
     </box>
-    ),[connectedScales])
+    )
 }
 
 export default ConnectedScales

@@ -7,6 +7,12 @@ const newScale = {
   address : '',
   measurements: [],
   capacity: 0,
+  calibrationValue : 0,
+  revision : 0,
+  counts : 0,
+  seed : 0,
+  graduationSize : 0,
+  uniqueID: 0,
 }
 
 const defaultState = {
@@ -67,6 +73,79 @@ const scales = (scales, {type, payload}) => {
           }
         }
       }
+
+    case 'calibrationRead':
+      return {
+        ...scales,
+        connectedScales: {
+          ...scales.connectedScales,
+          [payload.address] : {
+            ...scales.connectedScales[payload.address],
+            calibrationValue: payload.calibrationValue,
+          }
+        }
+      }
+
+    case 'revisionRead':
+      return {
+        ...scales,
+        connectedScales: {
+          ...scales.connectedScales,
+          [payload.address] : {
+            ...scales.connectedScales[payload.address],
+            revision: payload.revision,
+          }
+        }
+      }
+
+    case 'countsRead':
+      return {
+        ...scales,
+        connectedScales: {
+          ...scales.connectedScales,
+          [payload.address] : {
+            ...scales.connectedScales[payload.address],
+            counts: payload.counts,
+          }
+        }
+      }
+
+    case 'seedRead':
+      return {
+        ...scales,
+        connectedScales: {
+          ...scales.connectedScales,
+          [payload.address] : {
+            ...scales.connectedScales[payload.address],
+            seed: payload.seed,
+          }
+        }
+      }
+
+    case 'graduationSizeRead':
+      return {
+        ...scales,
+        connectedScales: {
+          ...scales.connectedScales,
+          [payload.address] : {
+            ...scales.connectedScales[payload.address],
+            graduationSize: payload.graduationSize,
+          }
+        }
+      }
+
+    case 'uniqueIDRead':
+      return {
+        ...scales,
+        connectedScales: {
+          ...scales.connectedScales,
+          [payload.address] : {
+            ...scales.connectedScales[payload.address],
+            uniqueID: payload.uniqueID,
+          }
+        }
+      }
+
     default:
       return scales
   }

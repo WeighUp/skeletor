@@ -12,7 +12,7 @@ const ConnectionForm = ({
   onSubmit,
   onDisconnect,
   connected,
-  ...rest,
+  ...rest
 }) => {
   let [
     state,

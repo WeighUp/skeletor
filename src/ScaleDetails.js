@@ -64,7 +64,7 @@ const ScaleDetails = ({
       <box
         top={5}
         height={10}
-        width="100%"
+        width="100%-2"
       >
         <list
           mouse={ true }
@@ -72,6 +72,7 @@ const ScaleDetails = ({
           top={0}
           height="100%"
           width="50%"
+          left={0}
           style={{
                 item: { fg: 'magenta' },
                 selected: { fg: 'black', bg: 'magenta' },
@@ -97,7 +98,7 @@ const ScaleDetails = ({
           top={0}
           height="100%"
           left="50%"
-          width="50%-1"
+          width="50%"
           data={[
             {
               title: 'Measurements',
@@ -116,12 +117,13 @@ const ScaleDetails = ({
             },
             //{x: [1,2,3,4,5], y: [1,2,3,4,5], title: 'foo'}
           ]}
-          minY={0}
+          minY={1}
           maxY={1000}
           style={{style:{text: 'blue', baseline: 'black'}}}
-          xLabelPadding={0}
-          xPadding={0}
+          xLabelPadding={1}
+          xPadding={1}
           showLegend={false}
+          showNthLabel={10}
           wholeNumbersOnly={false}
           label='Measurements'
         />
@@ -129,20 +131,38 @@ const ScaleDetails = ({
 
       <Table
         //ref={table}
-        label="Scale Parameters"
         mouse={ true }
         keys={ true }
         interactive={true}
           top={15}
-          height="100%-15"
+          height="100%-17"
 
         data={{
-          headers: ['Address', 'Capacity'],
+          headers: [
+            'Address',
+            'Cap.',
+            'Cal.',
+            'Rev.',
+            'Counts',
+            'Seed',
+            'Grad.',
+            'UniqueID'
+          ],
           data: [
-            [100, 300]
+            [
+              selectedScale.address || "-",
+              selectedScale.capacity || "-",
+              selectedScale.calibrationValue || "-",
+              selectedScale.revision || "-",
+              selectedScale.counts || "-",
+              selectedScale.seed || "-",
+              selectedScale.graduationSize || "-",
+              selectedScale.uniqueID || "-",
+            ]
           ]
         }}
-        columnWidth={[10]}
+        columnWidth={[10, 8, 8, 8, 8, 8, 8, 8]}
+        columnSpacing={3}
       />
     </box>
     )
