@@ -1,48 +1,26 @@
-import React, {
-  useReducer,
-  useMemo
-}                         from 'react'
 import blessed            from 'neo-blessed'
 import { render }         from 'react-blessed'
 
-import telnet             from 'telnet2'
+//import telnet             from 'telnet2'
 
-import SerialPort         from 'serialport'
-import Delimiter from '@serialport/parser-delimiter'
-import Regex from '@serialport/parser-regex'
 
-import axios              from 'axios'
-import moment             from 'moment'
+//import axios              from 'axios'
+//import moment             from 'moment'
 
-import * as ScaleCodes    from './scaleCodes'
-import * as ScaleCommands from './scaleCommands'
-import * as ScaleMessages from './scaleMessages'
+///import App                 from './app'
 
-import { messageHandler}  from './messageHandler'
-
-import Context           from './Context'
-import {reducer, initialState} from './reducer'
-
-import ConnectionForm    from './ConnectionForm'
-import MessageList       from './MessageList'
-import MessageDetails    from './MessageDetails'
-import ConnectedScales   from './ConnectedScales'
-import ScaleDetails      from './ScaleDetails'
-
-import stylesheet        from './styles'
-
-const WEIGHUP_SCALE_DEVICE_PATH = process.env.WEIGHUP_SCALE_DEVICE_PATH || '/dev/ttyUSB0'
-const WEIGHUP_API_URL           = process.env.WEIGHUP_API_URL
-const WEIGHUP_HUB_ID            = process.env.WEIGHUP_HUB_ID
+const WEIGHUP_SCALE_DEVICE_PATH = process.env.WEIGHUP_SCALE_DEVICE_PATH || '/dev/ttyUSB0';
+const WEIGHUP_API_URL           = process.env.WEIGHUP_API_URL;
+const WEIGHUP_HUB_ID            = process.env.WEIGHUP_HUB_ID;
 
 const screen = blessed.screen({
   smartCSR: true,
   title: 'WeighUp Scale Manager'
-})
+});
 
 screen.key(['escape', 'q', 'C-c'], function(ch, key) {
   return process.exit(0);
-})
+});
 
 //parser.on('data', serialData => {
 
@@ -54,134 +32,17 @@ screen.key(['escape', 'q', 'C-c'], function(ch, key) {
 //  `)
 //})
 
-const connectSerialPort = (path, onData) => {
-  //const serialPort = new SerialPort(path, {baudRate: 1228800})
-  const serialPort = new SerialPort(path, {baudRate: 9600})
-  const parser = serialPort.pipe(new Delimiter({ delimiter: '>', includeDelimiter : true }))
-  parser.on('data', onData)
-
-  serialPort.write(
-    Buffer.from(
-      ScaleMessages.toBytes(
-        ScaleCommands.getAddresses()
-      )
-    )
-  )
-
-  return serialPort
-}
 
 
-const App = () => {
-    const [state, dispatch] = useReducer(reducer, initialState)
 
-    //const contextVal = useMemo(()=>{return [state, dispatch]}, [state, dispatch])
-    let {
-        serialConnection : {
-        serialPort,
-        devicePath,
-      },
-      scales : { connectedScales }
-    } = state
-
-    return (
-
-    <Context.Provider value={[state, dispatch]}>
-  <box
-    top="0%"
-    left="0%"
-    width="100%"
-    height="100%"
-    //class={stylesheet.bordered}
-  >
-        <ConnectionForm
-          width="100%"
-          height={4}
-          connected={serialPort}
-          onSubmit={
-            formData => {
-              if(!serialPort && devicePath) {
-                serialPort = connectSerialPort(
-                  devicePath,
-                  data => {
-                    messageHandler({
-                      dispatch,
-                      serialPort,
-                      data,
-                    })
-                  }
-                )
-                dispatch({type: 'serialPortConnected', payload: {serialPort}})
-              }
-            }
-          }
-
-          onDisconnect={() => {
-            serialPort.close()
-            dispatch({type: 'serialPortDisconnected'})
-          }}
-        />
-        <box height="100%-3" top={3}>
-
-        <ConnectedScales
-          top={0}
-          width="50%"
-          height="30%"
-
-          refreshScales={()=> {
-            if(serialPort) {
-              dispatch({type: 'dropScaleList'})
-              serialPort.write(
-                Buffer.from(
-                  ScaleMessages.toBytes(
-                    ScaleCommands.getAddresses()
-                  )
-                )
-              )
-
-              dispatch({
-                type: 'messageSent',
-                payload: {
-                  message: 
-                    ScaleCommands.getAddresses()
-                }
-              })
-            }
-          }}
-        />
-        <MessageList label="Incoming Messages"
-      top="30%"
-      height="35%"
-      width="50%"
-      items={state.scaleMessages.incoming.map((msg, index) => `${index} - ${ScaleMessages.toBytes(msg.message).map(el => el.toString(16))}`)}
-      onSelect={(msg, index) => dispatch({type: 'messageSelected', payload: {selectedMessage: state.scaleMessages[index]}})}
-        />
-        <MessageList label="Outgoing Messages"
-          top="65%"
-          height="35%"
-          width="50%"
-    items={state.scaleMessages.outgoing.map((msg, index) => `${index} - ${ScaleMessages.toBytes(msg.message).map(el => el.toString(16))}`)}
-    onSelect={(msg, index) => dispatch({type: 'messageSelected', payload: {selectedMessage: state.scaleMessages[index]}})}
-        />
-
-        <ScaleDetails
-          top={0}
-          left="50%"
-          height="50%"
-        />
-        <MessageDetails
-          top="50%"
-          left="50%"
-          height="50%"
-        />
-</box>
-
-  </box>
-    </Context.Provider>
-  )
-}
-
-render(<App />, screen)
+render(<box top="center"
+           left="center"
+           width="50%"
+           height="50%"
+           border={{type: 'line'}}
+           style={{border: {fg: 'blue'}}}>
+        Hello World!
+      </box>, screen);
 
 //telnet({ tty: true }, function(client) {
 //  client.on('term', function(terminal) {

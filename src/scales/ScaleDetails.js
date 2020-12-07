@@ -9,11 +9,11 @@ import {
   Table,
 }                   from 'react-blessed-contrib'
 
-import Context      from './Context'
+import Context      from '../Context'
 
 import * as sm from './scaleMessages'
 
-import stylesheet   from './styles'
+//import stylesheet   from './styles'
 
 const ScaleDetails = ({
   ...rest

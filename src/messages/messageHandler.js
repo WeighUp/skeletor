@@ -1,8 +1,10 @@
 import moment             from 'moment'
 
-import * as sc from './scaleCodes'
-import * as ScaleMessages from './scaleMessages'
-import * as ScaleCommands from './scaleCommands'
+import {
+  ScaleCodes,
+  ScaleCommands ,
+  ScaleMessages,
+}                        from '../scales'
 
 const getScaleDetails = ({serialPort, dispatch, address}) => {
   const timeIncrement = 1000

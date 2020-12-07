@@ -2,11 +2,11 @@ import React, {
        useContext
 }                   from 'react'
 
-import Context      from './Context'
+import Context      from '../Context'
 
-import * as ScaleMessages from './scaleMessages'
+import {ScaleMessages } from '../scales'
 
-import stylesheet from './styles'
+//import stylesheet from './styles'
 
 const MessageList = React.memo((props) => {
 
