@@ -23,7 +23,6 @@ const ConnectedScales = ({
   const table = useCallback(table => {
     if(table) {
       table.widget.rows.on('select', (item, index) => {
-          console.debug('select', index)
         dispatch({
           type: 'scaleSelected',
           payload: {selectedScale: Object.values(connectedScalesRef.current)[index]}
