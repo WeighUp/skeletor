@@ -47,30 +47,29 @@ const connectSerialPort = (path, onData) => {
   )
 
   return serialPort
-}
+};
 
 const App = () => {
-    const [state, dispatch] = useReducer(reducer, initialState)
+  const [state, dispatch] = useReducer(reducer, initialState)
 
-    //const contextVal = useMemo(()=>{return [state, dispatch]}, [state, dispatch])
-    let {
-        serialConnection : {
-        serialPort,
-        devicePath,
-      },
-      scales : { connectedScales }
-    } = state
+  //const contextVal = useMemo(()=>{return [state, dispatch]}, [state, dispatch])
+  let {
+      serialConnection : {
+      serialPort,
+      devicePath,
+    },
+    scales : { connectedScales }
+  } = state
 
-    return (
-
+  return (
     <Context.Provider value={[state, dispatch]}>
-  <box
-    top="0%"
-    left="0%"
-    width="100%"
-    height="100%"
-    //class={stylesheet.bordered}
-  >
+      <box
+        top="0%"
+        left="0%"
+        width="100%"
+        height="100%"
+        //class={stylesheet.bordered}
+      >
         <ConnectionForm
           width="100%"
           height={4}
@@ -100,60 +99,64 @@ const App = () => {
         />
         <box height="100%-3" top={3}>
 
-        <ConnectedScales
-          top={0}
-          width="50%"
-          height="30%"
+          <ConnectedScales
+            top={0}
+            width="50%"
+            height="30%"
 
-          refreshScales={()=> {
-            if(serialPort) {
-              dispatch({type: 'dropScaleList'})
-              serialPort.write(
-                Buffer.from(
-                  ScaleMessages.toBytes(
-                    ScaleCommands.getAddresses()
+            refreshScales={()=> {
+              if(serialPort) {
+                dispatch({type: 'dropScaleList'})
+                serialPort.write(
+                  Buffer.from(
+                    ScaleMessages.toBytes(
+                      ScaleCommands.getAddresses()
+                    )
                   )
                 )
-              )
 
-              dispatch({
-                type: 'messageSent',
-                payload: {
-                  message: 
-                    ScaleCommands.getAddresses()
-                }
-              })
-            }
-          }}
-        />
-        <MessageList label="Incoming Messages"
-      top="30%"
-      height="35%"
-      width="50%"
-      items={state.scaleMessages.incoming.map((msg, index) => `${index} - ${ScaleMessages.toBytes(msg.message).map(el => el.toString(16))}`)}
-      onSelect={(msg, index) => dispatch({type: 'messageSelected', payload: {selectedMessage: state.scaleMessages[index]}})}
-        />
-        <MessageList label="Outgoing Messages"
-          top="65%"
-          height="35%"
-          width="50%"
-    items={state.scaleMessages.outgoing.map((msg, index) => `${index} - ${ScaleMessages.toBytes(msg.message).map(el => el.toString(16))}`)}
-    onSelect={(msg, index) => dispatch({type: 'messageSelected', payload: {selectedMessage: state.scaleMessages[index]}})}
-        />
+                dispatch({
+                  type: 'messageSent',
+                  payload: {
+                    message: 
+                      ScaleCommands.getAddresses()
+                  }
+                })
+              }
+            }}
+          />
 
-        <ScaleDetails
-          top={0}
-          left="50%"
-          height="50%"
-        />
-        <MessageDetails
-          top="50%"
-          left="50%"
-          height="50%"
-        />
-</box>
+          <MessageList label="Incoming Messages"
+            top="30%"
+            height="35%"
+            width="50%"
+            items={state.scaleMessages.incoming.map((msg, index) => `${index} - ${ScaleMessages.toBytes(msg.message).map(el => el.toString(16))}`)}
+            onSelect={(msg, index) => dispatch({type: 'messageSelected', payload: {selectedMessage: state.scaleMessages[index]}})}
+          />
 
-  </box>
+          <MessageList label="Outgoing Messages"
+            top="65%"
+            height="35%"
+            width="50%"
+            items={state.scaleMessages.outgoing.map((msg, index) => `${index} - ${ScaleMessages.toBytes(msg.message).map(el => el.toString(16))}`)}
+            onSelect={(msg, index) => dispatch({type: 'messageSelected', payload: {selectedMessage: state.scaleMessages[index]}})}
+          />
+
+          <ScaleDetails
+            top={0}
+            left="50%"
+            height="50%"
+          />
+
+          <MessageDetails
+            top="50%"
+            left="50%"
+            height="50%"
+          />
+        </box>
+      </box>
     </Context.Provider>
   )
-}
+};
+
+export default App

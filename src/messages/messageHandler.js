@@ -1,7 +1,7 @@
 import moment             from 'moment'
 
 import {
-  ScaleCodes,
+  ScaleCodes as sc,
   ScaleCommands ,
   ScaleMessages,
 }                        from '../scales'

@@ -1,13 +1,14 @@
 import blessed            from 'neo-blessed'
 import { render }         from 'react-blessed'
 
+import React              from 'react'
 //import telnet             from 'telnet2'
 
 
 //import axios              from 'axios'
 //import moment             from 'moment'
 
-///import App                 from './app'
+import App                 from './app'
 
 const WEIGHUP_SCALE_DEVICE_PATH = process.env.WEIGHUP_SCALE_DEVICE_PATH || '/dev/ttyUSB0';
 const WEIGHUP_API_URL           = process.env.WEIGHUP_API_URL;
@@ -35,14 +36,7 @@ screen.key(['escape', 'q', 'C-c'], function(ch, key) {
 
 
 
-render(<box top="center"
-           left="center"
-           width="50%"
-           height="50%"
-           border={{type: 'line'}}
-           style={{border: {fg: 'blue'}}}>
-        Hello World!
-      </box>, screen);
+render(<App />, screen);
 
 //telnet({ tty: true }, function(client) {
 //  client.on('term', function(terminal) {

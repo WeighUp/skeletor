@@ -7,11 +7,11 @@ import React,
          useEffect
        }            from 'react'
 
-import Context      from './Context'
+import Context      from '../Context'
 
 import { Table }    from 'react-blessed-contrib'
 
-import stylesheet   from './styles'
+import stylesheet   from '../styles'
 
 const ConnectedScales = ({
   ...rest
@@ -23,6 +23,7 @@ const ConnectedScales = ({
   const table = useCallback(table => {
     if(table) {
       table.widget.rows.on('select', (item, index) => {
+          console.debug('select', index)
         dispatch({
           type: 'scaleSelected',
           payload: {selectedScale: Object.values(connectedScalesRef.current)[index]}
@@ -56,13 +57,12 @@ const ConnectedScales = ({
 
     <Table
       ref={table}
-      label="Connected Scales"
       mouse={ true }
       keys={ true }
       interactive={true}
       top={0}
       height="100%-2"
-      width="100%-9"
+      width="100%-11"
 
         //style={{
         //      item: { fg: 'magenta' },

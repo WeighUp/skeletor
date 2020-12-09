@@ -13,7 +13,7 @@ import Context      from '../Context'
 
 import * as sm from './scaleMessages'
 
-//import stylesheet   from './styles'
+import stylesheet   from '../styles'
 
 const ScaleDetails = ({
   ...rest
@@ -27,7 +27,7 @@ const ScaleDetails = ({
 
 
   return useMemo(() => {
-    if(!selectedScale) return <box class={stylesheet.bordered} {...rest}/>
+    if(!selectedScale) return <box class={stylesheet.bordered} label="Scale Details" {...rest}/>
   
     selectedScale = connectedScales[selectedScale.address]
   
@@ -167,6 +167,6 @@ const ScaleDetails = ({
     </box>
     )
   }, [connectedScales])
-}
+};
 
 export default ScaleDetails

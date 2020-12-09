@@ -6,7 +6,7 @@ import Context      from '../Context'
 
 import { ScaleMessages } from '../scales'
 
-//import stylesheet from './styles'
+import stylesheet from '../styles'
 
 const MessageDetails = ({...rest}) => {
   const [{selectedMessage}, dispatch] = useContext(Context)
