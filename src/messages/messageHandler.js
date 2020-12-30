@@ -16,7 +16,12 @@ const getScaleDetails = ({address, serialBus}) => {
   serialBus.push(ScaleCommands.getUniqueID(address))
 }
 
-export const messageHandler = ({serialBus, dispatch, data}) => {
+export const messageHandler = ({
+  serialBus,
+  dispatch,
+  data,
+  measurementRead
+}) => {
   const readingTime = moment()
   const message = ScaleMessages.fromBytes(data)
 
@@ -114,6 +119,8 @@ export const messageHandler = ({serialBus, dispatch, data}) => {
           readingTime
         }
       })
+
+      measurementRead(message)
     },
     [sc.GET_COUNTS_RESP]            : () => {
       dispatch({

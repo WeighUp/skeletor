@@ -26,11 +26,16 @@ const newScale = {
 const preloadedState = {
   scales : {
     connectedScales       : {
-      '00B76672' : { ...newScale, address: '00B76672' },
-      '00B79BBD' : { ...newScale, address: '00B79BBD' },
-      '00B79950' : { ...newScale, address: '00B79950' },
-      '00B796AA' : { ...newScale, address: '00B796AA' },
-      '00B72EE5' : { ...newScale, address: '00B72EE5' },
+     // '00B76672' : { ...newScale, address: '00B76672' },
+     // '00B79BBD' : { ...newScale, address: '00B79BBD' },
+     // '00B79950' : { ...newScale, address: '00B79950' },
+     // '00B796AA' : { ...newScale, address: '00B796AA' },
+     // '00B72EE5' : { ...newScale, address: '00B72EE5' },
+      '00B7674E' : { ...newScale, address: '00B7674E' },
+      '00B73CF6' : { ...newScale, address: '00B73CF6' },
+      '00B77DAE' : { ...newScale, address: '00B77DAE' },
+      '00B72E24' : { ...newScale, address: '00B72E24' },
+      '00B78804' : { ...newScale, address: '00B78804' },
     },
     selectedScale         : null,
   },

@@ -16,10 +16,24 @@ import App, {
 }                         from './app'
 
 const WEIGHUP_SCALE_DEVICE_PATH = process.env.WEIGHUP_SCALE_DEVICE_PATH || '/dev/ttyUSB0';
-const WEIGHUP_API_URL           = process.env.WEIGHUP_API_URL;
-const WEIGHUP_HUB_ID            = process.env.WEIGHUP_HUB_ID;
+const WEIGHUP_API_URL           = process.env.WEIGHUP_API_URL || 'https://weighup-api-development.herokuapp.com'
+const WEIGHUP_HUB_ID            = process.env.WEIGHUP_HUB_ID || 1;
 
-init(WEIGHUP_SCALE_DEVICE_PATH)
+init(
+  WEIGHUP_SCALE_DEVICE_PATH,
+  msg => {
+    axios.post(`${WEIGHUP_API_URL}/measurements.json`,{
+      hub_id: WEIGHUP_HUB_ID,
+      scale_id: msg.address,
+      weight: msg.data,
+      //reading_time: moment().format("ddd MMM DD HH:mm:ss ZZ YYYY")
+      reading_time: moment().format("YYYY-MMM-DD HH:mm:ss")
+    })
+    .catch(error => {
+      console.error(error)
+    })
+  }
+)
 
 //const screen = blessed.screen({
 //  smartCSR: true,

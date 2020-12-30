@@ -21,7 +21,7 @@ import {
 
 import store             from './reducer'
 
-export const init = (devicePath) => {
+export const init = (devicePath, measurementRead) => {
   const serialBus = _serialBus(message => {
     serialPort.write(
         Buffer.from(
@@ -49,7 +49,7 @@ export const init = (devicePath) => {
           serialBus.push(
                 ScaleCommands.getWeight(scale.address)
           )
-        }, 100)
+        }, 1000)
       })
      //serialPort.write(
      //   Buffer.from(
@@ -67,6 +67,7 @@ export const init = (devicePath) => {
         dispatch : store.dispatch,
         serialBus,
         data,
+        measurementRead
       })
     }
   )
