@@ -7,8 +7,9 @@ import { Provider }       from 'react-redux/lib/alternate-renderers'
 //import telnet             from 'telnet2'
 
 
-//import axios              from 'axios'
-//import moment             from 'moment'
+import axios              from 'axios'
+import moment             from 'moment'
+
 import App, {
   store,
   ErrorBoundary,
@@ -16,7 +17,7 @@ import App, {
 }                         from './app'
 
 const WEIGHUP_SCALE_DEVICE_PATH = process.env.WEIGHUP_SCALE_DEVICE_PATH || '/dev/ttyUSB0';
-const WEIGHUP_API_URL           = process.env.WEIGHUP_API_URL || 'https://weighup-api-development.herokuapp.com'
+const WEIGHUP_API_URL           = process.env.WEIGHUP_API_URL || 'https://weighup-api-development.herokuapp.com/api/v1'
 const WEIGHUP_HUB_ID            = process.env.WEIGHUP_HUB_ID || 1;
 
 init(
@@ -24,7 +25,7 @@ init(
   msg => {
     axios.post(`${WEIGHUP_API_URL}/measurements.json`,{
       hub_id: WEIGHUP_HUB_ID,
-      scale_id: msg.address,
+      scale_uuid: msg.address,
       weight: msg.data,
       //reading_time: moment().format("ddd MMM DD HH:mm:ss ZZ YYYY")
       reading_time: moment().format("YYYY-MMM-DD HH:mm:ss")
