@@ -31,7 +31,7 @@ init(
       reading_time: moment().format("YYYY-MMM-DD HH:mm:ss")
     })
     .catch(error => {
-      console.error(error)
+      console.error(error.message)
     })
   }
 )
