@@ -1,8 +1,5 @@
-import React, {
-       useContext
-}                   from 'react'
+import React                   from 'react'
 
-import Context      from '../Context'
 
 import {ScaleMessages } from '../scales'
 

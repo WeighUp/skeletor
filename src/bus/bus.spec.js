@@ -1,4 +1,10 @@
-import { bus, serialBus, scaleBus } from './bus'
+import {
+  serialInterval,
+  scaleInterval,
+  bus,
+  serialBus,
+  scaleBus
+} from './bus'
 
 describe('bus', () => {
   beforeEach(() => {
@@ -107,7 +113,7 @@ describe('bus', () => {
 
       scaleB.push({test: 'test'})
       scaleB.start()
-      jest.advanceTimersByTime(200)
+      jest.advanceTimersByTime(scaleInterval)
 
       expect(mock).toBeCalled()
     })
@@ -118,7 +124,7 @@ describe('bus', () => {
 
       scaleB.push({test: 'test'})
       scaleB.start()
-      jest.advanceTimersByTime(200)
+      jest.advanceTimersByTime(scaleInterval)
 
       expect(mock).toBeCalledWith({test: 'test'})
 
@@ -155,7 +161,7 @@ describe('bus', () => {
       b.push({address: '00B726F1'})
       b.start()
 
-      jest.advanceTimersByTime(20)
+      jest.advanceTimersByTime(serialInterval)
 
       expect(b.scaleBusses()['00B726F1']).not.toBeNull()
     })
@@ -166,7 +172,7 @@ describe('bus', () => {
 
       b.push({test: 'test'})
       b.start()
-      jest.advanceTimersByTime(20)
+      jest.advanceTimersByTime(serialInterval)
 
       expect(mock).toBeCalled()
     })
@@ -178,9 +184,21 @@ describe('bus', () => {
       b.push(msg)
       b.start()
 
-      jest.advanceTimersByTime(20)
+      jest.advanceTimersByTime(serialInterval)
 
       expect(mock).toBeCalledWith(msg)
+    })
+
+    it('does not call send() with message when message with address is dequeued', () => {
+      const mock = jest.fn()
+      const b = serialBus(mock)
+      const msg = {address: '00B726F1'}
+      b.push(msg)
+      b.start()
+
+      jest.advanceTimersByTime(serialInterval)
+
+      expect(mock).not.toBeCalled()
     })
 
     it('pushes messages with address to the matching scale bus when dequeued', () => {
@@ -190,7 +208,7 @@ describe('bus', () => {
       b.push(msg)
       b.start()
 
-      jest.advanceTimersByTime(20)
+      jest.advanceTimersByTime(serialInterval)
 
       expect(b.scaleBusses()['00B726F1'].messages()).toEqual([msg])
     })

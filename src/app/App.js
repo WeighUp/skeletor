@@ -1,15 +1,18 @@
 import React, {
-  useReducer,
-  useMemo
+  useState
 }                         from 'react'
 
+import {
+  useSelector,
+  useDispatch
+}                         from 'react-redux/lib/alternate-renderers'
 
-import SerialPort         from 'serialport'
-import Delimiter from '@serialport/parser-delimiter'
-import Regex from '@serialport/parser-regex'
+
 
 import axios              from 'axios'
 import moment             from 'moment'
+
+import connectSerialPort  from '../serial'
 
 import {
   ScaleCodes,
@@ -25,50 +28,36 @@ import {
   MessageDetails,
 }                        from '../messages'
 
-import Context           from '../Context'
-import {reducer, initialState} from './reducer'
+import store             from './reducer'
+import ErrorBoundary     from './ErrorBoundary'
 
 import ConnectionForm    from '../ConnectionForm'
 
 import stylesheet        from '../styles'
 
-const connectSerialPort = (path, onData) => {
-  //const serialPort = new SerialPort(path, {baudRate: 1228800})
-  const serialPort = new SerialPort(path, {baudRate: 9600})
-  const parser = serialPort.pipe(new Delimiter({ delimiter: '>', includeDelimiter : true }))
-  parser.on('data', onData)
-
-  serialPort.write(
-    Buffer.from(
-      ScaleMessages.toBytes(
-        ScaleCommands.getAddresses()
-      )
-    )
-  )
-
-  return serialPort
-};
 
 const App = () => {
-  const [state, dispatch] = useReducer(reducer, initialState)
 
-  //const contextVal = useMemo(()=>{return [state, dispatch]}, [state, dispatch])
   let {
       serialConnection : {
       serialPort,
       devicePath,
     },
-    scales : { connectedScales }
-  } = state
+    scales : { connectedScales },
+    scaleMessages
+  } = useSelector(state => ({...state}))
+
+  const dispatch = useDispatch()
+  const [state, setState] = useState(null)
 
   return (
-    <Context.Provider value={[state, dispatch]}>
+    <ErrorBoundary>
       <box
         top="0%"
         left="0%"
         width="100%"
         height="100%"
-        //class={stylesheet.bordered}
+        //class{stylesheet.bordered}
       >
         <ConnectionForm
           width="100%"
@@ -76,9 +65,20 @@ const App = () => {
           connected={serialPort}
           onSubmit={
             formData => {
+              setState({})
               if(!serialPort && devicePath) {
                 serialPort = connectSerialPort(
                   devicePath,
+                  err => {
+                    serialPort.write(
+                      Buffer.from(
+                        ScaleMessages.toBytes(
+                          ScaleCommands.getAddresses()
+                        )
+                      )
+                    )
+                  },
+
                   data => {
                     messageHandler({
                       dispatch,
@@ -130,16 +130,16 @@ const App = () => {
             top="30%"
             height="35%"
             width="50%"
-            items={state.scaleMessages.incoming.map((msg, index) => `${index} - ${ScaleMessages.toBytes(msg.message).map(el => el.toString(16))}`)}
-            onSelect={(msg, index) => dispatch({type: 'messageSelected', payload: {selectedMessage: state.scaleMessages[index]}})}
+            items={scaleMessages.incoming.map((msg, index) => `${index} - ${ScaleMessages.toBytes(msg.message).map(el => el.toString(16))}`)}
+            onSelect={(msg, index) => dispatch({type: 'messageSelected', payload: {selectedMessage: scaleMessages[index]}})}
           />
 
           <MessageList label="Outgoing Messages"
             top="65%"
             height="35%"
             width="50%"
-            items={state.scaleMessages.outgoing.map((msg, index) => `${index} - ${ScaleMessages.toBytes(msg.message).map(el => el.toString(16))}`)}
-            onSelect={(msg, index) => dispatch({type: 'messageSelected', payload: {selectedMessage: state.scaleMessages[index]}})}
+            items={scaleMessages.outgoing.map((msg, index) => `${index} - ${ScaleMessages.toBytes(msg.message).map(el => el.toString(16))}`)}
+            onSelect={(msg, index) => dispatch({type: 'messageSelected', payload: {selectedMessage: scaleMessages[index]}})}
           />
 
           <ScaleDetails
@@ -155,7 +155,7 @@ const App = () => {
           />
         </box>
       </box>
-    </Context.Provider>
+    </ErrorBoundary>
   )
 };
 

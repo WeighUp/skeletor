@@ -1,4 +1,12 @@
-import combineReducers from 'react-combine-reducers'
+import {
+  configureStore,
+  getDefaultMiddleware,
+  createSlice
+} from '@reduxjs/toolkit'
+
+import devToolsEnhancer from 'remote-redux-devtools'
+
+import logger from 'redux-logger'
 
 const MEASUREMENT_LIMIT = 50
 const MESSAGE_LIMIT     = 50
@@ -15,9 +23,15 @@ const newScale = {
   uniqueID: 0,
 }
 
-const defaultState = {
+const preloadedState = {
   scales : {
-    connectedScales       : {},
+    connectedScales       : {
+      '00B76672' : { ...newScale, address: '00B76672' },
+      '00B79BBD' : { ...newScale, address: '00B79BBD' },
+      '00B79950' : { ...newScale, address: '00B79950' },
+      '00B796AA' : { ...newScale, address: '00B796AA' },
+      '00B72EE5' : { ...newScale, address: '00B72EE5' },
+    },
     selectedScale         : null,
   },
   scaleMessages: {
@@ -31,9 +45,11 @@ const defaultState = {
   }
 }
 
-const scales = (scales, {type, payload}) => {
-  switch(type) {
-    case 'scaleConnected':
+const scales = createSlice ({
+  name: 'scales',
+  initialState : {},
+  reducers : {
+    scaleConnected(scales, {payload}) {
       return {
         ...scales,
         connectedScales: {
@@ -41,11 +57,14 @@ const scales = (scales, {type, payload}) => {
           [payload.address]: {...newScale, ...payload},
         }
       }
-    case 'dropScaleList':
+    },
+    dropScaleList(scales, {payload}) {
       return {...scales, connectedScales: {}, selectedScale: null}
-    case 'scaleSelected':
+    },
+    scaleSelected(scales, {payload}) {
       return {...scales, ...payload}
-    case 'measurementRead':
+    },
+    measurementRead(scales, {payload}) {
       return {
         ...scales,
         connectedScales: {
@@ -62,7 +81,8 @@ const scales = (scales, {type, payload}) => {
           }
         }
       }
-    case 'capacityRead':
+    },
+    capacityRead(scales, {payload}) {
       return {
         ...scales,
         connectedScales: {
@@ -73,8 +93,9 @@ const scales = (scales, {type, payload}) => {
           }
         }
       }
+    },
 
-    case 'calibrationRead':
+    calibrationRead(scales, {payload}) {
       return {
         ...scales,
         connectedScales: {
@@ -85,8 +106,8 @@ const scales = (scales, {type, payload}) => {
           }
         }
       }
-
-    case 'revisionRead':
+    },
+    revisionRead(scales, {payload}) {
       return {
         ...scales,
         connectedScales: {
@@ -97,8 +118,8 @@ const scales = (scales, {type, payload}) => {
           }
         }
       }
-
-    case 'countsRead':
+    },
+    countsRead(scales, {payload}) {
       return {
         ...scales,
         connectedScales: {
@@ -109,8 +130,8 @@ const scales = (scales, {type, payload}) => {
           }
         }
       }
-
-    case 'seedRead':
+    },
+    seedRead(scales, {payload}) {
       return {
         ...scales,
         connectedScales: {
@@ -121,8 +142,8 @@ const scales = (scales, {type, payload}) => {
           }
         }
       }
-
-    case 'graduationSizeRead':
+    },
+    graduationSizeRead(scales, {payload}) {
       return {
         ...scales,
         connectedScales: {
@@ -133,8 +154,8 @@ const scales = (scales, {type, payload}) => {
           }
         }
       }
-
-    case 'uniqueIDRead':
+    },
+    uniqueIDRead(scales, {payload}) {
       return {
         ...scales,
         connectedScales: {
@@ -145,15 +166,15 @@ const scales = (scales, {type, payload}) => {
           }
         }
       }
-
-    default:
-      return scales
+    }
   }
-}
+})
 
-const scaleMessages = (state = {}, {type, payload}) => {
-  switch(type) {
-    case 'messageReceived':
+const scaleMessages = createSlice({
+  name: 'scaleMessages',
+  initialState : [],
+  reducers : {
+    messageReceived(state, {payload}) {
       return {
         ...state,
         incoming: [
@@ -161,7 +182,8 @@ const scaleMessages = (state = {}, {type, payload}) => {
           payload,
         ].slice(-MESSAGE_LIMIT),
       }
-    case 'messageSent':
+    },
+    messageSent(state, {payload}) {
       return {
         ...state,
         outgoing: [
@@ -169,33 +191,47 @@ const scaleMessages = (state = {}, {type, payload}) => {
           payload,
         ].slice(-MESSAGE_LIMIT),
       }
-    case 'messageSelected':
+    },
+    messageSelected(state, {payload}) {
       return {
         ...state,
         ...payload
       }
-    default:
-      return state
+    }
   }
-}
-
-const serialConnection = (state = {}, {type, payload}) => {
-  switch(type) {
-    case 'setDevicePath':
-      return {...state, ...payload}
-    case 'serialPortConnected':
-      return {...state, ...payload}
-    case 'serialPortDisconnected':
-      return {...state, serialPort: null}
-    default:
-      return state
-  }
-}
-
-export const [reducer, initialState] = combineReducers({
-  scales           : [scales, defaultState.scales],
-  scaleMessages    : [scaleMessages, defaultState.scaleMessages],
-  serialConnection : [serialConnection, defaultState.serialConnection]
 })
 
-export default [reducer, initialState]
+const serialConnection = createSlice({
+  name         : 'serialConnection',
+  initialState : {},
+  reducers     : {
+    setDevicePath(state, {payload}) {
+      return {...state, ...payload}
+    },
+    serialPortConnected(state, {payload}) {
+      return {...state, ...payload}
+    },
+    serialPortDisconnected(state, {payload}) {
+      return {...state, serialPort: null}
+    }
+  }
+})
+
+export const store = configureStore({
+  reducer: {
+      scales: scales.reducer,
+    scaleMessages: scaleMessages.reducer,
+    serialConnection : serialConnection.reducer
+  },
+
+  middleware: (getDefaultMiddleware) =>
+    //getDefaultMiddleware().concat(logger),
+    [],
+
+  devTools: false,
+  enhancers: [devToolsEnhancer({port: 8999})],
+
+  preloadedState
+})
+
+export default store

@@ -6,139 +6,17 @@ import {
   ScaleMessages,
 }                        from '../scales'
 
-const getScaleDetails = ({serialPort, dispatch, address}) => {
-  const timeIncrement = 1000
-
-  setTimeout(() => {
-    serialPort.write(
-      Buffer.from(
-        ScaleMessages.toBytes(
-          ScaleCommands.getCapacity(address)
-          )
-      )
-    )
-
-    dispatch({
-      type: 'messageSent',
-      payload: {
-        message:
-          ScaleCommands.getCapacity(address)
-      }
-    })
-  }, 1)
-
-
-  setTimeout(() => {
-    serialPort.write(
-      Buffer.from(
-        ScaleMessages.toBytes(
-          ScaleCommands.getCalibrationValue(address)
-          )
-      )
-    )
-
-    dispatch({
-      type: 'messageSent',
-      payload: {
-        message:
-          ScaleCommands.getCalibrationValue(address)
-      }
-    })
-  }, timeIncrement * 1)
-
-
-  setTimeout(() => {
-    serialPort.write(
-      Buffer.from(
-        ScaleMessages.toBytes(
-          ScaleCommands.getRevision(address)
-          )
-      )
-    )
-
-    dispatch({
-      type: 'messageSent',
-      payload: {
-        message:
-          ScaleCommands.getRevision(address)
-      }
-    })
-  }, timeIncrement * 2)
-
-  setTimeout(() => {
-    serialPort.write(
-      Buffer.from(
-        ScaleMessages.toBytes(
-          ScaleCommands.getCounts(address)
-          )
-      )
-    )
-
-    dispatch({
-      type: 'messageSent',
-      payload: {
-        message:
-          ScaleCommands.getCounts(address)
-      }
-    })
-  }, timeIncrement * 3)
-
-  setTimeout(() => {
-    serialPort.write(
-      Buffer.from(
-        ScaleMessages.toBytes(
-          ScaleCommands.getSeed(address)
-          )
-      )
-    )
-
-    dispatch({
-      type: 'messageSent',
-      payload: {
-        message:
-          ScaleCommands.getSeed(address)
-      }
-    })
-  }, timeIncrement * 4)
-
-  setTimeout(() => {
-    serialPort.write(
-      Buffer.from(
-        ScaleMessages.toBytes(
-          ScaleCommands.getGraduationSize(address)
-          )
-      )
-    )
-
-    dispatch({
-      type: 'messageSent',
-      payload: {
-        message:
-          ScaleCommands.getGraduationSize(address)
-      }
-    })
-  }, timeIncrement * 5)
-
-  setTimeout(() => {
-    serialPort.write(
-      Buffer.from(
-        ScaleMessages.toBytes(
-          ScaleCommands.getUniqueID(address)
-          )
-      )
-    )
-
-    dispatch({
-      type: 'messageSent',
-      payload: {
-        message:
-          ScaleCommands.getUniqueID(address)
-      }
-    })
-  }, timeIncrement * 6)
+const getScaleDetails = ({address, serialBus}) => {
+  serialBus.push(ScaleCommands.getCapacity(address))
+  serialBus.push(ScaleCommands.getCalibrationValue(address))
+  serialBus.push(ScaleCommands.getRevision(address))
+  serialBus.push(ScaleCommands.getCounts(address))
+  serialBus.push(ScaleCommands.getSeed(address))
+  serialBus.push(ScaleCommands.getGraduationSize(address))
+  serialBus.push(ScaleCommands.getUniqueID(address))
 }
 
-export const messageHandler = ({serialPort, dispatch, data}) => {
+export const messageHandler = ({serialBus, dispatch, data}) => {
   const readingTime = moment()
   const message = ScaleMessages.fromBytes(data)
 
@@ -165,40 +43,27 @@ export const messageHandler = ({serialPort, dispatch, data}) => {
         ScaleMessages.encodeAddress([0x61, 0x64, 0x64, 0x72])
       ) {
         dispatch({
-          type: 'scaleConnected',
+          type: 'scales/scaleConnected',
           payload: {
             address: message.data,
           },
         })
 
         getScaleDetails({
-          serialPort,
+          serialBus,
           dispatch,
           address: message.data,
         })
 
-       // let getWeightInterval = setInterval(()=>{
-       //   serialPort.write(
-       //     Buffer.from(
-       //       ScaleMessages.toBytes(
-       //         ScaleCommands.getWeight(message.data)
-       //         )
-       //     )
-       //   )
-
-       //   dispatch({
-       //     type: 'messageSent',
-       //     payload: {
-       //       message:
-       //         ScaleCommands.getWeight(message.data)
-       //     }
-       //   })
-
-       // }, 1000)
+        let getWeightInterval = setInterval(()=>{
+          serialBus.push(
+                ScaleCommands.getWeight(message.data)
+          )
+        }, 1000)
       }
       else {
         dispatch({
-          type: 'uniqueIDRead',
+          type: 'scales/uniqueIDRead',
           payload: {
             address          : message.address,
             uniqueID : message.data,
@@ -210,7 +75,7 @@ export const messageHandler = ({serialPort, dispatch, data}) => {
     },
     [sc.GET_CAPACITY_RESP]          : () => {
       dispatch({
-        type: 'capacityRead',
+        type: 'scales/capacityRead',
         payload: {
           address  : message.address,
           capacity : message.data,
@@ -221,7 +86,7 @@ export const messageHandler = ({serialPort, dispatch, data}) => {
 
     [sc.GET_CALIBRATION_VALUE_RESP] : () => {
       dispatch({
-        type: 'calibrationRead',
+        type: 'scales/calibrationRead',
         payload: {
           address          : message.address,
           calibrationValue : message.data,
@@ -232,7 +97,7 @@ export const messageHandler = ({serialPort, dispatch, data}) => {
 
     [sc.GET_REVISION_RESP]          : () => {
       dispatch({
-        type: 'revisionRead',
+        type: 'scales/revisionRead',
         payload: {
           address  : message.address,
           revision : message.data,
@@ -242,7 +107,7 @@ export const messageHandler = ({serialPort, dispatch, data}) => {
     },
     [sc.GET_WEIGHT_RESP]            : () => {
       dispatch({
-        type: 'measurementRead',
+        type: 'scales/measurementRead',
         payload: {
           address     : message.address,
           measurement : message.data,
@@ -252,7 +117,7 @@ export const messageHandler = ({serialPort, dispatch, data}) => {
     },
     [sc.GET_COUNTS_RESP]            : () => {
       dispatch({
-        type: 'countsRead',
+        type: 'scales/countsRead',
         payload: {
           address  : message.address,
           counts   : message.data,
@@ -262,7 +127,7 @@ export const messageHandler = ({serialPort, dispatch, data}) => {
     },
     [sc.GET_SEED_RESP]              : () => {
       dispatch({
-        type: 'seedRead',
+        type: 'scales/seedRead',
         payload: {
           address  : message.address,
           seed     : message.data,
@@ -272,7 +137,7 @@ export const messageHandler = ({serialPort, dispatch, data}) => {
     },
     [sc.GET_GRAD_SIZE_RESP]         : () => {
       dispatch({
-        type: 'graduationSizeRead',
+        type: 'scales/graduationSizeRead',
         payload: {
           address        : message.address,
           graduationSize : message.data,
@@ -282,7 +147,7 @@ export const messageHandler = ({serialPort, dispatch, data}) => {
     },
     [sc.GET_UNIQUE_ID_RESP]         : () => {
       dispatch({
-        type: 'uniqueIDRead',
+        type: 'scales/uniqueIDRead',
         payload: {
           address  : message.address,
           uniqueID : message.data,
@@ -292,5 +157,5 @@ export const messageHandler = ({serialPort, dispatch, data}) => {
     },
   };
   if (responseHandlers[cmd]) responseHandlers[cmd]();
-  //console.log('handler', message.command, fuckyou[message.command], fuckyou)
 }
+

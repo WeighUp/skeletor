@@ -1,9 +1,10 @@
 import React, {
-       useContext,
-       useRef
+       useRef,
+       useState
 }                   from 'react'
 
-import Context      from './Context'
+import { useDispatch } from 'react-redux/lib/alternate-renderers'
+
 
 import stylesheet from './styles'
 
@@ -14,10 +15,7 @@ const ConnectionForm = ({
   connected,
   ...rest
 }) => {
-  let [
-    state,
-    dispatch
-  ] = useContext(Context)
+  const dispatch = useDispatch()
 
   const formRef = useRef(null)
 

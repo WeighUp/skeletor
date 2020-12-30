@@ -1,42 +1,56 @@
-import blessed            from 'neo-blessed'
+import blessed            from 'blessed'
 import { render }         from 'react-blessed'
 
 import React              from 'react'
+
+import { Provider }       from 'react-redux/lib/alternate-renderers'
 //import telnet             from 'telnet2'
 
 
 //import axios              from 'axios'
 //import moment             from 'moment'
-
-import App                 from './app'
+import App, {
+  store,
+  ErrorBoundary,
+  init
+}                         from './app'
 
 const WEIGHUP_SCALE_DEVICE_PATH = process.env.WEIGHUP_SCALE_DEVICE_PATH || '/dev/ttyUSB0';
 const WEIGHUP_API_URL           = process.env.WEIGHUP_API_URL;
 const WEIGHUP_HUB_ID            = process.env.WEIGHUP_HUB_ID;
 
-const screen = blessed.screen({
-  smartCSR: true,
-  title: 'WeighUp Scale Manager'
-});
+init(WEIGHUP_SCALE_DEVICE_PATH)
 
-screen.key(['escape', 'q', 'C-c'], function(ch, key) {
-  return process.exit(0);
-});
-
-//parser.on('data', serialData => {
-
-//  console.log(`
-//****message received from serial serialPort****
-//raw msg (hex)    : 0x${serialData.toString('hex')}
-//raw msg          :          ${serialData}
-//parsed            : ${JSON.stringify(ScaleMessages.fromBytes(serialData), null, 2)}
-//  `)
-//})
-
-
-
-
-render(<App />, screen);
+//const screen = blessed.screen({
+//  smartCSR: true,
+//  title: 'WeighUp Scale Manager'
+//});
+//
+//screen.key(['escape', 'q', 'C-c'], function(ch, key) {
+//  return process.exit(0);
+//});
+//
+////parser.on('data', serialData => {
+//
+////  console.log(`
+////****message received from serial serialPort****
+////raw msg (hex)    : 0x${serialData.toString('hex')}
+////raw msg          :          ${serialData}
+////parsed            : ${JSON.stringify(ScaleMessages.fromBytes(serialData), null, 2)}
+////  `)
+////})
+//
+//
+//
+//
+//render(
+//  <Provider store={store}>
+//    <ErrorBoundary>
+//    <App />
+//    </ErrorBoundary>
+//  </Provider>,
+//  screen
+//);
 
 //telnet({ tty: true }, function(client) {
 //  client.on('term', function(terminal) {

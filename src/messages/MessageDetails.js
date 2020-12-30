@@ -2,14 +2,18 @@ import React, {
        useContext
 }                   from 'react'
 
-import Context      from '../Context'
+
+import {
+  useSelector,
+  useDispatch
+}                         from 'react-redux/lib/alternate-renderers'
 
 import { ScaleMessages } from '../scales'
 
 import stylesheet from '../styles'
 
 const MessageDetails = ({...rest}) => {
-  const [{selectedMessage}, dispatch] = useContext(Context)
+  const {selectedMessage} = useSelector(state => ({...state}))
 
   return(
     <box

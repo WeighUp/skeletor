@@ -1,11 +1,12 @@
-const serialInterval = 20
-const scaleInterval  = 200
+const serialInterval = 40
+const scaleInterval  = 100
 
 const serialBus = (send) => {
   let _scaleBusses  = {}
 
   const addScale = address => {
-    _scaleBusses[address] = scaleBus(address)
+    _scaleBusses[address] = scaleBus(send)
+    _scaleBusses[address].start()
   }
 
   const removeScale = address => {
@@ -27,7 +28,9 @@ const serialBus = (send) => {
 
         _scaleBusses[msg.address].push(msg)
       }
-      send(msg)
+      else{
+        send(msg)
+      }
     }, serialInterval)
   }
 }
@@ -61,7 +64,7 @@ const bus = (consumer, interval) => {
   const messages = () => [...messageQueue]
 
   const push = msg => {
-    messageQueue.push(msg)
+    messageQueue.unshift(msg)
   }
 
   const clear = () => { messageQueue = [] }
@@ -75,4 +78,10 @@ const bus = (consumer, interval) => {
   }
 }
 
-export { bus, serialBus, scaleBus }
+export {
+  serialInterval,
+  scaleInterval,
+  bus,
+  serialBus,
+  scaleBus
+}

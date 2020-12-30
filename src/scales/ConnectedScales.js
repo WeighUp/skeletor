@@ -7,7 +7,10 @@ import React,
          useEffect
        }            from 'react'
 
-import Context      from '../Context'
+import {
+  useSelector,
+  useDispatch
+}                   from 'react-redux/lib/alternate-renderers'
 
 import { Table }    from 'react-blessed-contrib'
 
@@ -16,11 +19,11 @@ import stylesheet   from '../styles'
 const ConnectedScales = ({
   ...rest
 }) => {
-  const [{scales: {connectedScales}}, dispatch] = useContext(Context)
+  const {scales: {connectedScales}} = useSelector(state => ({...state}))
 
   const connectedScalesRef = useRef(connectedScales)
   connectedScalesRef.current = connectedScales
-  const table = useCallback(table => {
+  const tableRef = useCallback(table => {
     if(table) {
       table.widget.rows.on('select', (item, index) => {
         dispatch({
@@ -55,7 +58,7 @@ const ConnectedScales = ({
     </button>
 
     <Table
-      ref={table}
+      ref={tableRef}
       mouse={ true }
       keys={ true }
       interactive={true}

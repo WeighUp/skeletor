@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "prestart": "npm run build",
-    "start": "npm run dev",
+    "start": "remotedev --hostname=localhost --port=8999 & npm run dev",
     "dev": "NODE_ENV='development' babel-node ./dist/index.js",
     "init": "mkdir dist",
     "clean": "rm -rf dist",
@@ -49,6 +49,7 @@
     "jest": "^24.9.0"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^1.5.0",
     "axios": "^0.19.0",
     "blessed": "^0.1.81",
     "moment": "^2.24.0",
@@ -56,7 +57,15 @@
     "react-blessed": "^0.6.1",
     "react-blessed-contrib": "^0.2.1",
     "react-combine-reducers": "^1.0.4",
+    "react-dom": "^17.0.1",
+    "react-redux": "^7.2.2",
+    "redux": "^4.0.5",
+    "redux-logger": "^3.0.6",
+    "reinspect": "^1.1.0",
+    "remote-redux-devtools": "^0.5.16",
+    "remotedev-server": "^0.3.1",
     "serialport": "^9.0.1",
-    "telnet2": "0.0.1"
+    "telnet2": "0.0.1",
+    "ws": "^7.4.1"
   }
 }

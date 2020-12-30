@@ -1,15 +1,17 @@
 import React, {
-  useContext,
   useState,
   useMemo,
 }                   from 'react'
 
 import {
+  useSelector,
+  useDispatch
+}                   from 'react-redux/lib/alternate-renderers'
+
+import {
   Line,
   Table,
 }                   from 'react-blessed-contrib'
-
-import Context      from '../Context'
 
 import * as sm from './scaleMessages'
 
@@ -18,7 +20,7 @@ import stylesheet   from '../styles'
 const ScaleDetails = ({
   ...rest
 }) => {
-  let [{scales: {selectedScale, connectedScales}, scaleMessages}, dispatch] = useContext(Context)
+  let {scales: {selectedScale, connectedScales}, scaleMessages} = useSelector(state => ({...state}))
 
 
   const [newAddress, setNewAddress] = useState(null)
