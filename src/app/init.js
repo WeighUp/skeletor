@@ -49,7 +49,7 @@ export const init = (devicePath, measurementRead) => {
           serialBus.push(
                 ScaleCommands.getWeight(scale.address)
           )
-        }, 1000)
+        }, 2000)
       })
      //serialPort.write(
      //   Buffer.from(

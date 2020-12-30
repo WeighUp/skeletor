@@ -1,4 +1,4 @@
-const serialInterval = 50
+const serialInterval = 100
 const scaleInterval  = 200
 
 const serialBus = (send) => {
