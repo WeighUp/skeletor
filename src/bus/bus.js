@@ -1,5 +1,5 @@
-const serialInterval = 100
-const scaleInterval  = 200
+const serialInterval = 80
+const scaleInterval  = 500
 
 const serialBus = (send) => {
   let _scaleBusses  = {}

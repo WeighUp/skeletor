@@ -17,7 +17,9 @@ import App, {
 }                         from './app'
 
 const WEIGHUP_SCALE_DEVICE_PATH = process.env.WEIGHUP_SCALE_DEVICE_PATH || '/dev/ttyUSB0';
-const WEIGHUP_API_URL           = process.env.WEIGHUP_API_URL || 'https://weighup-api-development.herokuapp.com/api/v1'
+//const WEIGHUP_API_URL           = process.env.WEIGHUP_API_URL || 'https://weighup-api-development.herokuapp.com/api/v1'
+//const WEIGHUP_API_URL           = process.env.WEIGHUP_API_URL || 'http://192.168.10.103:8000/api/v1'
+const WEIGHUP_API_URL           = process.env.WEIGHUP_API_URL || 'http://localhost:8000/api/v1'
 const WEIGHUP_HUB_ID            = process.env.WEIGHUP_HUB_ID || 1;
 
 init(

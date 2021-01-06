@@ -29,7 +29,7 @@ export const init = (devicePath, measurementRead) => {
         )
     )
 
-    console.log('message sent from bus', message)
+    console.info('message sent from bus to', message.address)
 
     store.dispatch({
       type: 'messageSent',
