@@ -39,7 +39,7 @@ init({
     })
   },
   scaleInterval: WEIGHUP_SCALE_INTERVAL,
-  setialInterval: WEIGHUP_SERIAL_INTERVAL
+  serialInterval: WEIGHUP_SERIAL_INTERVAL
 })
 
 //const screen = blessed.screen({
