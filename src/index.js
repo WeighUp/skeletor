@@ -25,7 +25,7 @@ const WEIGHUP_SCALE_INTERVAL    = process.env.WEIGHUP_SCALE_INTERVAL || 500
 const WEIGHUP_SERIAL_INTERVAL   = process.env.WEIGHUP_SERIAL_INTERVAL || 80
 
 init({
-  devicePath = WEIGHUP_SCALE_DEVICE_PATH,
+  devicePath: WEIGHUP_SCALE_DEVICE_PATH,
   measurementRead:  msg => {
     axios.post(`${WEIGHUP_API_URL}/measurements.json`,{
       hub_id: WEIGHUP_HUB_ID,
