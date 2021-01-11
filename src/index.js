@@ -20,11 +20,13 @@ const WEIGHUP_SCALE_DEVICE_PATH = process.env.WEIGHUP_SCALE_DEVICE_PATH || '/dev
 //const WEIGHUP_API_URL           = process.env.WEIGHUP_API_URL || 'https://weighup-api-development.herokuapp.com/api/v1'
 //const WEIGHUP_API_URL           = process.env.WEIGHUP_API_URL || 'http://192.168.10.103:8000/api/v1'
 const WEIGHUP_API_URL           = process.env.WEIGHUP_API_URL || 'http://localhost:8000/api/v1'
-const WEIGHUP_HUB_ID            = process.env.WEIGHUP_HUB_ID || 1;
+const WEIGHUP_HUB_ID            = process.env.WEIGHUP_HUB_ID || 1
+const WEIGHUP_SCALE_INTERVAL    = process.env.WEIGHUP_SCALE_INTERVAL || 500
+const WEIGHUP_SERIAL_INTERVAL   = process.env.WEIGHUP_SERIAL_INTERVAL || 80
 
-init(
-  WEIGHUP_SCALE_DEVICE_PATH,
-  msg => {
+init({
+  devicePath = WEIGHUP_SCALE_DEVICE_PATH,
+  measurementRead:  msg => {
     axios.post(`${WEIGHUP_API_URL}/measurements.json`,{
       hub_id: WEIGHUP_HUB_ID,
       scale_uuid: msg.address,
@@ -35,8 +37,10 @@ init(
     .catch(error => {
       console.error(error.message)
     })
-  }
-)
+  },
+  scaleInterval: WEIGHUP_SCALE_INTERVAL,
+  setialInterval: WEIGHUP_SERIAL_INTERVAL
+})
 
 //const screen = blessed.screen({
 //  smartCSR: true,

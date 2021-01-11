@@ -21,22 +21,31 @@ import {
 
 import store             from './reducer'
 
-export const init = (devicePath, measurementRead) => {
-  const serialBus = _serialBus(message => {
-    serialPort.write(
-        Buffer.from(
-          ScaleMessages.toBytes(message)
-        )
-    )
+export const init = ({
+  devicePath,
+  measurementRead,
+  serialInterval,
+  scaleInterval
+}) => {
+  const serialBus = _serialBus({
+    serialInterval,
+    scaleInterval,
+    send: message => {
+      serialPort.write(
+          Buffer.from(
+            ScaleMessages.toBytes(message)
+          )
+      )
 
-    console.info('message sent from bus to', message.address)
+      console.info('message sent from bus to', message.address)
 
-    store.dispatch({
-      type: 'messageSent',
-      payload: {
-        message
-      }
-    })
+      store.dispatch({
+        type: 'messageSent',
+        payload: {
+          message
+        }
+      })
+    }
   })
   serialBus.start()
 
