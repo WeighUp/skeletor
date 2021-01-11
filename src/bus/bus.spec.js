@@ -1,10 +1,11 @@
 import {
-  serialInterval,
-  scaleInterval,
   bus,
   serialBus,
   scaleBus
 } from './bus'
+
+const serialInterval = 80
+const scaleInterval  = 500
 
 describe('bus', () => {
   beforeEach(() => {
@@ -109,7 +110,7 @@ describe('bus', () => {
   describe('scaleBus', () => {
     it('sets the consumer loop at the appropriate interval', () => {
       const mock = jest.fn()
-      const scaleB = scaleBus(mock)
+      const scaleB = scaleBus({scaleInterval, send: mock})
 
       scaleB.push({test: 'test'})
       scaleB.start()
@@ -120,7 +121,7 @@ describe('bus', () => {
 
     it('calls send() with the message when a message is dequeued', () => {
       const mock = jest.fn()
-      const scaleB = scaleBus(mock)
+      const scaleB = scaleBus({scaleInterval, send: mock})
 
       scaleB.push({test: 'test'})
       scaleB.start()
@@ -133,13 +134,13 @@ describe('bus', () => {
 
   describe('serialBus', () => {
     it('returns the scale busses', () => {
-      const b = serialBus()
+      const b = serialBus({})
 
       expect(b.scaleBusses()).toEqual({})
     })
 
     it('adds scale busses', () => {
-      const b = serialBus()
+      const b = serialBus({})
 
       b.addScale('00B726F1')
 
@@ -147,7 +148,7 @@ describe('bus', () => {
     })
 
     it('removes scale busses', () => {
-      const b = serialBus()
+      const b = serialBus({})
 
       b.addScale('00B726F1')
       b.removeScale('00B726F1')
@@ -155,60 +156,69 @@ describe('bus', () => {
       expect(b.scaleBusses()['00B726F1']).toBeUndefined()
     })
 
-    it('adds a scale bus when message with address with no matching scale bus is dequeued', () => {
+    it('adds a scale bus when message with address that matches no scale bus is dequeued', () => {
       const mock = jest.fn()
-      const b = serialBus(mock)
+      const b = serialBus({
+        serialInterval,
+        scaleInterval,
+        send: mock
+      })
       b.push({address: '00B726F1'})
       b.start()
 
-      jest.advanceTimersByTime(serialInterval)
+      jest.runOnlyPendingTimers()
+//      jest.advanceTimersByTime(serialInterval)
 
       expect(b.scaleBusses()['00B726F1']).not.toBeNull()
     })
 
     it('calls the consumer loop at the appropriate interval', () => {
       const mock = jest.fn()
-      const b = serialBus(mock)
+      const b = serialBus({serialInterval, scaleInterval, send: mock})
 
       b.push({test: 'test'})
       b.start()
-      jest.advanceTimersByTime(serialInterval)
+      //jest.advanceTimersByTime(serialInterval)
+      jest.runOnlyPendingTimers()
 
       expect(mock).toBeCalled()
     })
 
     it('calls send() with message when message with no address is dequeued', () => {
       const mock = jest.fn()
-      const b = serialBus(mock)
+      const b = serialBus({serialInterval, send: mock})
       const msg = {test: 'test'}
       b.push(msg)
       b.start()
 
-      jest.advanceTimersByTime(serialInterval)
+      //jest.advanceTimersByTime(serialInterval)
+      jest.runOnlyPendingTimers()
 
       expect(mock).toBeCalledWith(msg)
     })
 
     it('does not call send() with message when message with address is dequeued', () => {
       const mock = jest.fn()
-      const b = serialBus(mock)
+      const b = serialBus({serialInterval, send: mock})
       const msg = {address: '00B726F1'}
       b.push(msg)
       b.start()
 
-      jest.advanceTimersByTime(serialInterval)
+      jest.runOnlyPendingTimers()
+      //jest.advanceTimersByTime(serialInterval)
 
       expect(mock).not.toBeCalled()
     })
 
     it('pushes messages with address to the matching scale bus when dequeued', () => {
       const mock = jest.fn()
-      const b = serialBus(mock)
+      const b = serialBus({serialInterval, send: mock})
       const msg = {address: '00B726F1'}
       b.push(msg)
       b.start()
 
-      jest.advanceTimersByTime(serialInterval)
+      jest.runOnlyPendingTimers()
+      //jest.advanceTimersByTime(serialInterval)
 
       expect(b.scaleBusses()['00B726F1'].messages()).toEqual([msg])
     })
