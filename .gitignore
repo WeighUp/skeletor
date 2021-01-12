@@ -124,3 +124,7 @@ tags
 # End of https://www.gitignore.io/api/git,vim,node
 
 dist/
+
+## ignore conf files but not examples
+conf/*
+!conf/*.example*

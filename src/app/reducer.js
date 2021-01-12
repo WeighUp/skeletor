@@ -8,6 +8,9 @@ import devToolsEnhancer from 'remote-redux-devtools'
 
 import logger from 'redux-logger'
 
+import * as fs from 'fs'
+import {resolve} from 'path'
+
 const MEASUREMENT_LIMIT = 50
 const MESSAGE_LIMIT     = 50
 
@@ -23,57 +26,22 @@ const newScale = {
   uniqueID: 0,
 }
 
+let connectedScales = JSON.parse(
+  fs.readFileSync(
+    resolve(__dirname, '../../conf/connectedScales.json')
+  )
+)
+
+connectedScales = connectedScales.reduce(
+  (scales, address) => ({
+    ...scales, [address]: {...newScale, address}
+  }),
+  {}
+)
+
 const preloadedState = {
   scales : {
-    connectedScales       : {
-     // '00B76672' : { ...newScale, address: '00B76672' },
-     // '00B79BBD' : { ...newScale, address: '00B79BBD' },
-     // '00B79950' : { ...newScale, address: '00B79950' },
-     // '00B796AA' : { ...newScale, address: '00B796AA' },
-     // '00B72EE5' : { ...newScale, address: '00B72EE5' },
-      '00B7674E' : { ...newScale, address: '00B7674E' },
-      '00B73CF6' : { ...newScale, address: '00B73CF6' },
-      '00B77DAE' : { ...newScale, address: '00B77DAE' },
-      '00B72E24' : { ...newScale, address: '00B72E24' },
-      '00B78804' : { ...newScale, address: '00B78804' },
-      '00B74360' : { ...newScale, address: '00B74360' },
-      '00B7541D' : { ...newScale, address: '00B7541D' },
-      '00B743F3' : { ...newScale, address: '00B743F3' },
-      '00B7317E' : { ...newScale, address: '00B7317E' },
-      '00B788BD' : { ...newScale, address: '00B788BD' },
-
-      '00B77677' : { ...newScale, address: '00B77677' },
-      '00B79A3D' : { ...newScale, address: '00B79A3D' },
-      '00B77DFB' : { ...newScale, address: '00B77DFB' },
-
-      '00B77AA5' : { ...newScale, address: '00B77AA5' },
-      '00B75879' : { ...newScale, address: '00B75879' },
-      '00B77F3E' : { ...newScale, address: '00B77F3E' },
-      '00B7906A' : { ...newScale, address: '00B7906A' },
-      '00B727AC' : { ...newScale, address: '00B727AC' },
-      '00B74EB7' : { ...newScale, address: '00B74EB7' },
-      '00B79F2F' : { ...newScale, address: '00B79F2F' },
-      '00B76370' : { ...newScale, address: '00B76370' },
-      '00B79F57' : { ...newScale, address: '00B79F57' },
-      '00B7334A' : { ...newScale, address: '00B7334A' },
-      '00B79B14' : { ...newScale, address: '00B79B14' },
-      '00B77ABC' : { ...newScale, address: '00B77ABC' },
-      '00B72F58' : { ...newScale, address: '00B72F58' },
-      '00B727BC' : { ...newScale, address: '00B727BC' },
-      '00B7566E' : { ...newScale, address: '00B7566E' },
-      '00B7512B' : { ...newScale, address: '00B7512B' },
-      '00B7895D' : { ...newScale, address: '00B7895D' },
-      '00B75618' : { ...newScale, address: '00B75618' },
-      '00B7666F' : { ...newScale, address: '00B7666F' },
-      '00B79CEA' : { ...newScale, address: '00B79CEA' },
-      '00B72772' : { ...newScale, address: '00B72772' },
-      '00B76B53' : { ...newScale, address: '00B76B53' },
-      '00B775B6' : { ...newScale, address: '00B775B6' },
-      '00B7338E' : { ...newScale, address: '00B7338E' },
-      '00B76A8D' : { ...newScale, address: '00B76A8D' },
-      '00B76227' : { ...newScale, address: '00B76227' },
-      '00B73053' : { ...newScale, address: '00B73053' },
-    },
+    connectedScales,
     selectedScale         : null,
   },
   scaleMessages: {
