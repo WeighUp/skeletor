@@ -7,9 +7,11 @@
     "dist"
   ],
   "scripts": {
-    "prestart": "npm run build",
-    "start": "remotedev --hostname=localhost --port=8999 & npm run dev",
-    "dev": "NODE_ENV='development' babel-node ./dist/index.js",
+    "prestart-prod": "npm run build",
+    "start-prod": "NODE_ENV='production' node ./dist/index.js",
+    "start": "npm run dev",
+    "start-dev-remote": "remotedev --hostname=localhost --port=8999 & npm run dev",
+    "dev": "NODE_ENV='development' babel-node ./src/index.js",
     "init": "mkdir dist",
     "clean": "rm -rf dist",
     "prebuild": "npm run clean && npm run init",
@@ -52,6 +54,7 @@
     "@reduxjs/toolkit": "^1.5.0",
     "axios": "^0.21.1",
     "blessed": "^0.1.81",
+    "dotenv": "^8.2.0",
     "loglevel": "^1.7.1",
     "loglevel-plugin-prefix": "^0.8.4",
     "moment": "^2.24.0",
