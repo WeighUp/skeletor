@@ -27,6 +27,9 @@ export const init = ({
   serialInterval,
   scaleInterval
 }) => {
+  const sentMessageCount = 0,
+        receivedMessageCount = 0
+
   const serialBus = _serialBus({
     serialInterval,
     scaleInterval,
@@ -38,6 +41,7 @@ export const init = ({
       )
 
       log.info('message sent from bus to', message.address)
+      log.debug('Sent messages:', ++sentMessageCount)
 
       store.dispatch({
         type: 'messageSent',
@@ -60,17 +64,11 @@ export const init = ({
           )
         }, 2000)
       })
-     //serialPort.write(
-     //   Buffer.from(
-     //     ScaleMessages.toBytes(
-     //       ScaleCommands.getAddresses()
-     //     )
-     //   )
-     // )
     },
 
     data => {
       log.info('message received from scale:', ScaleMessages.fromBytes(data))
+      log.debug('Received message count"', ++receivedMessageCount)
 
       messageHandler({
         dispatch : store.dispatch,
