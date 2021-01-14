@@ -70,7 +70,7 @@ init({
 //
 ////parser.on('data', serialData => {
 //
-////  log.log(`
+////  log.info(`
 ////****message received from serial serialPort****
 ////raw msg (hex)    : 0x${serialData.toString('hex')}
 ////raw msg          :          ${serialData}
@@ -146,7 +146,7 @@ init({
 //      reading_time: moment().format("YYYY-MMM-DD HH:mm:ss")
 //    } )
 //      .catch(error => {
-//        log.log(error)
+//        log.info(error)
 //      })
 //  }
 //})
@@ -168,13 +168,13 @@ init({
 //    )
 //  )
 //)
-//log.log('wrote to serialPort')
-//log.log(ScaleCommands.getAddresses())
-//log.log(ScaleMessages.toBytes(ScaleCommands.getAddresses()))
-///log.log(Buffer.from(ScaleMessages.toBytes(ScaleCommands.getAddresses())))
+//log.info('wrote to serialPort')
+//log.info(ScaleCommands.getAddresses())
+//log.info(ScaleMessages.toBytes(ScaleCommands.getAddresses()))
+///log.info(Buffer.from(ScaleMessages.toBytes(ScaleCommands.getAddresses())))
 
 //setTimeout(() => {
-//  log.log('drup')},
+//  log.info('drup')},
 // 15000
 //)
 //
@@ -207,7 +207,7 @@ init({
 //
 //const measureLoop = () => {
 //setTimeout(() => {
-//  log.log('measure!')
+//  log.info('measure!')
 //
 //  serialPort.write(
 //    scaleMessages.toBytes(scaleCommands.measure(0x0))

@@ -40,11 +40,11 @@ setInterval(()=>{
     )
   )
 
-  log.log('sent Get-Addresses command!')
+  log.info('sent Get-Addresses command!')
 }, 12000)
 
 port.on('data', serialData => {
-  log.log(`
+  log.info(`
 ****data received from serial port****
 raw data (hex)    : 0x${serialData.toString('hex')}
 raw data (utf8)    : ${serialData.toString('utf8')}
@@ -52,7 +52,7 @@ raw data (utf8)    : ${serialData.toString('utf8')}
 })
 
 parser.on('data', serialData => {
-  log.log(`
+  log.info(`
 ****message received from parser****
 raw msg (hex) : 0x${serialData.toString('hex')}
 raw msg       :          ${serialData}

@@ -12,7 +12,7 @@ const connectSerialPort = (path, onConnect, onData) => {
 
       log.info('serialPort connected:', serialPort)
       serialPort.flush(error => {
-        if(error) { log.log('error flushing serial port', error.message) }
+        if(error) { log.info('error flushing serial port', error.message) }
         onConnect(err)
       })
     }
