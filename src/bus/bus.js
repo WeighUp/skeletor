@@ -8,6 +8,8 @@ const serialBus = ({serialInterval, scaleInterval, send}) => {
   let _scaleBusses  = {}
 
   const addScale = address => {
+    log.debug('adding bus for scale with address:', address)
+
     _scaleBusses[address] = scaleBus({scaleInterval, send})
     _scaleBusses[address].start()
   }
