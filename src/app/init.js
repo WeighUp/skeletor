@@ -27,8 +27,8 @@ export const init = ({
   serialInterval,
   scaleInterval
 }) => {
-  const sentMessageCount = 0,
-        receivedMessageCount = 0
+  let sentMessageCount = 0,
+      receivedMessageCount = 0
 
   const serialBus = _serialBus({
     serialInterval,
