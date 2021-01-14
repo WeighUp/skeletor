@@ -87,8 +87,8 @@ const ScaleDetails = ({
           }
 
           onSelect={(scale, index) => {
-            //console.log(index)
-            //console.log(connectedScales)
+            //log.log(index)
+            //log.log(connectedScales)
             //dispatch({
             //  type: 'scaleSelected',
             //  //index-1 because listtable uses first index for column headers durp

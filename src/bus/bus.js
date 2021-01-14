@@ -2,8 +2,8 @@
 //const scaleInterval  = 500
 
 const serialBus = ({serialInterval, scaleInterval, send}) => {
-  console.debug('scale interval:', scaleInterval)
-  console.debug('serial interval:', serialInterval)
+  log.debug('scale interval:', scaleInterval)
+  log.debug('serial interval:', serialInterval)
 
   let _scaleBusses  = {}
 

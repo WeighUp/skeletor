@@ -7,12 +7,12 @@ const connectSerialPort = (path, onConnect, onData) => {
     {baudRate: 9600},
     err => {
       if (err) {
-        return console.error('Error: ', err.message)
+        return log.error('Error: ', err.message)
       }
 
-      console.info('serialPort connected:', serialPort)
+      log.info('serialPort connected:', serialPort)
       serialPort.flush(error => {
-        if(error) { console.log('error flushing serial port', error.message) }
+        if(error) { log.log('error flushing serial port', error.message) }
         onConnect(err)
       })
     }
@@ -27,7 +27,7 @@ const connectSerialPort = (path, onConnect, onData) => {
 
   parser.on('data',
     data => {
-      console.info('data received from serial port:', data)
+      log.info('data received from serial port:', data)
       onData(data)
     }
   )

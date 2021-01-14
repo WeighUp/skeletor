@@ -10,11 +10,28 @@ import { Provider }       from 'react-redux/lib/alternate-renderers'
 import axios              from 'axios'
 import moment             from 'moment'
 
+import log from 'loglevel'
+import prefix from 'loglevel-plugin-prefix'
+
 import App, {
   store,
   ErrorBoundary,
   init
 }                         from './app'
+
+//use loglevel logger throughout app
+global.log = log
+prefix.reg(log)
+log.enableAll()
+prefix.apply(log, {
+  template: '[%t] %l:',
+  levelFormatter: function (level) {
+    return level.toUpperCase();
+  },
+  timestampFormatter: function (date) {
+    return date.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, '$1');
+  }
+})
 
 const WEIGHUP_SCALE_DEVICE_PATH = process.env.WEIGHUP_SCALE_DEVICE_PATH || '/dev/ttyUSB0';
 //const WEIGHUP_API_URL           = process.env.WEIGHUP_API_URL || 'https://weighup-api-development.herokuapp.com/api/v1'
@@ -35,7 +52,7 @@ init({
       reading_time: moment().format("YYYY-MMM-DD HH:mm:ss")
     })
     .catch(error => {
-      console.error(error.message)
+      log.error(error.message)
     })
   },
   scaleInterval: WEIGHUP_SCALE_INTERVAL,
@@ -53,7 +70,7 @@ init({
 //
 ////parser.on('data', serialData => {
 //
-////  console.log(`
+////  log.log(`
 ////****message received from serial serialPort****
 ////raw msg (hex)    : 0x${serialData.toString('hex')}
 ////raw msg          :          ${serialData}
@@ -129,7 +146,7 @@ init({
 //      reading_time: moment().format("YYYY-MMM-DD HH:mm:ss")
 //    } )
 //      .catch(error => {
-//        console.log(error)
+//        log.log(error)
 //      })
 //  }
 //})
@@ -151,13 +168,13 @@ init({
 //    )
 //  )
 //)
-//console.log('wrote to serialPort')
-//console.log(ScaleCommands.getAddresses())
-//console.log(ScaleMessages.toBytes(ScaleCommands.getAddresses()))
-///console.log(Buffer.from(ScaleMessages.toBytes(ScaleCommands.getAddresses())))
+//log.log('wrote to serialPort')
+//log.log(ScaleCommands.getAddresses())
+//log.log(ScaleMessages.toBytes(ScaleCommands.getAddresses()))
+///log.log(Buffer.from(ScaleMessages.toBytes(ScaleCommands.getAddresses())))
 
 //setTimeout(() => {
-//  console.log('drup')},
+//  log.log('drup')},
 // 15000
 //)
 //
@@ -190,7 +207,7 @@ init({
 //
 //const measureLoop = () => {
 //setTimeout(() => {
-//  console.log('measure!')
+//  log.log('measure!')
 //
 //  serialPort.write(
 //    scaleMessages.toBytes(scaleCommands.measure(0x0))

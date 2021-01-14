@@ -37,7 +37,7 @@ export const init = ({
           )
       )
 
-      console.info('message sent from bus to', message.address)
+      log.info('message sent from bus to', message.address)
 
       store.dispatch({
         type: 'messageSent',
@@ -70,7 +70,7 @@ export const init = ({
     },
 
     data => {
-      console.info('message received from scale:', ScaleMessages.fromBytes(data))
+      log.info('message received from scale:', ScaleMessages.fromBytes(data))
 
       messageHandler({
         dispatch : store.dispatch,

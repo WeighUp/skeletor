@@ -166,5 +166,5 @@ payload      : 0x${payload.toString('hex')}/${payload.readBigInt64BE().toString(
 )
 
 export const log = (message) => {
-  console.log(asString(message))
+  log.log(asString(message))
 }
