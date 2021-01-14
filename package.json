@@ -53,6 +53,7 @@
     "axios": "^0.21.1",
     "blessed": "^0.1.81",
     "loglevel": "^1.7.1",
+    "loglevel-plugin-prefix": "^0.8.4",
     "moment": "^2.24.0",
     "react": "^16.8.6",
     "react-blessed": "^0.6.1",
