@@ -1,3 +1,5 @@
+import * as conf          from './config'
+
 import blessed            from 'blessed'
 import { render }         from 'react-blessed'
 
@@ -33,19 +35,13 @@ prefix.apply(log, {
   }
 })
 
-const WEIGHUP_SCALE_DEVICE_PATH = process.env.WEIGHUP_SCALE_DEVICE_PATH || '/dev/ttyUSB0';
-//const WEIGHUP_API_URL           = process.env.WEIGHUP_API_URL || 'https://weighup-api-development.herokuapp.com/api/v1'
-//const WEIGHUP_API_URL           = process.env.WEIGHUP_API_URL || 'http://192.168.10.103:8000/api/v1'
-const WEIGHUP_API_URL           = process.env.WEIGHUP_API_URL || 'http://localhost:8000/api/v1'
-const WEIGHUP_HUB_ID            = process.env.WEIGHUP_HUB_ID || 1
-const WEIGHUP_SCALE_INTERVAL    = process.env.WEIGHUP_SCALE_INTERVAL || 500
-const WEIGHUP_SERIAL_INTERVAL   = process.env.WEIGHUP_SERIAL_INTERVAL || 80
+log.debug('Config values loaded:', conf)
 
 init({
-  devicePath: WEIGHUP_SCALE_DEVICE_PATH,
+  devicePath: conf.WEIGHUP_SCALE_DEVICE_PATH,
   measurementRead:  msg => {
-    axios.post(`${WEIGHUP_API_URL}/measurements.json`,{
-      hub_id: WEIGHUP_HUB_ID,
+    axios.post(`${conf.WEIGHUP_API_URL}/measurements.json`,{
+      hub_id: conf.WEIGHUP_HUB_ID,
       scale_uuid: msg.address,
       weight: msg.data,
       //reading_time: moment().format("ddd MMM DD HH:mm:ss ZZ YYYY")
@@ -55,8 +51,8 @@ init({
       log.error(error.message)
     })
   },
-  scaleInterval: WEIGHUP_SCALE_INTERVAL,
-  serialInterval: WEIGHUP_SERIAL_INTERVAL
+  scaleInterval: conf.WEIGHUP_SCALE_INTERVAL,
+  serialInterval: conf.WEIGHUP_SERIAL_INTERVAL
 })
 
 //const screen = blessed.screen({

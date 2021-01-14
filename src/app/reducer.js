@@ -28,7 +28,8 @@ const newScale = {
 
 let connectedScales = JSON.parse(
   fs.readFileSync(
-    resolve(__dirname, '../../conf/connectedScales.json')
+    process.env.WEIGHUP_CONNECTED_SCALES_FILE
+    //resolve(__dirname, process.env.WEIGHUP_CONNECTED_SCALES_FILE)
   )
 )
 

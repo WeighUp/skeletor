@@ -68,7 +68,7 @@ export const init = ({
 
     data => {
       log.info('message received from scale:', ScaleMessages.fromBytes(data))
-      log.debug('Received message count"', ++receivedMessageCount)
+      log.debug('Received message count:', ++receivedMessageCount)
 
       messageHandler({
         dispatch : store.dispatch,

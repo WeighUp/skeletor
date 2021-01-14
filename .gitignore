@@ -128,3 +128,6 @@ dist/
 ## ignore conf files but not examples
 conf/*
 !conf/*.example*
+
+## use .env/env vars for primary configuration
+.env
