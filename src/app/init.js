@@ -49,6 +49,7 @@ export const init = ({
       })
     },
     serialInterval,
+    100
   )
   serialBus.start()
 
