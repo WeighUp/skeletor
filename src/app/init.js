@@ -47,7 +47,7 @@ export const init = ({
           message
         }
       })
-    },  
+    },
     serialInterval,
   )
   serialBus.start()
@@ -66,6 +66,7 @@ export const init = ({
     },
 
     data => {
+      serialBus.unlock()
       log.info('message received from scale:', ScaleMessages.fromBytes(data))
       log.debug('Received message count:', ++receivedMessageCount)
 
