@@ -1,5 +1,5 @@
 import SerialPort  from 'serialport'
-import Delimiter   from '@serialport/parser-delimiter'
+import Parser      from './parser-fairbanks'
 
 const connectSerialPort = (path, onConnect, onData) => {
   const serialPort = new SerialPort(
@@ -19,10 +19,7 @@ const connectSerialPort = (path, onConnect, onData) => {
   )
 
   const parser = serialPort.pipe(
-    new Delimiter({
-      delimiter: '>',
-      includeDelimiter : true
-    })
+    new Parser()
   )
 
   parser.on('data',
