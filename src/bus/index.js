@@ -1,1 +1,1 @@
-export { bus, serialBus, scaleBus } from './bus'
+export { bus } from './bus'

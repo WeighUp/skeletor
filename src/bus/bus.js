@@ -1,63 +1,19 @@
-//const serialInterval = 80
-//const scaleInterval  = 500
-
-const serialBus = ({serialInterval, scaleInterval, send}) => {
-  log.debug('scale interval:', scaleInterval)
-  log.debug('serial interval:', serialInterval)
-
-  let _scaleBusses  = {}
-
-  const addScale = address => {
-    log.debug('adding bus for scale with address:', address)
-
-    _scaleBusses[address] = scaleBus({scaleInterval, send})
-    _scaleBusses[address].start()
-  }
-
-  const removeScale = address => {
-    let discard
-    ({[address] : discard, ..._scaleBusses} = _scaleBusses)
-  }
-
-  const scaleBusses = () => _scaleBusses
-
-  return {
-    addScale,
-    removeScale,
-    scaleBusses,
-    ...bus(msg => {
-      if (msg.address) {
-        if (!_scaleBusses[msg.address]) {
-          addScale(msg.address)
-        }
-
-        _scaleBusses[msg.address].push(msg)
-      }
-      else{
-        send(msg)
-      }
-    }, serialInterval)
-  }
-}
-
-const scaleBus = ({scaleInterval, send}) => {
-  return {
-    ...bus(msg => {
-      send(msg)
-    }, scaleInterval)
-  }
-}
-
-const bus = (consumer, interval) => {
+const bus = (consumer = ()=>{}, interval, timeout) => {
   let messageQueue = []
   let consumerLoop
+  let lock = false
+  let lastSentTime = Date.now()
 
   const start = () => {
     consumerLoop = setInterval(
       () => {
-        let msg
-        if (msg = messageQueue.pop()) {
-          consumer && consumer(msg)
+        if (!lock || Date.now() - lastSentTime >= timeout) {
+          let msg
+          if (msg = messageQueue.pop()) {
+            consumer && consumer(msg)
+            lock = true
+            lastSentTime = Date.now()
+          }
         }
       },
       interval
@@ -74,17 +30,18 @@ const bus = (consumer, interval) => {
 
   const clear = () => { messageQueue = [] }
 
+  const unlock = () => { lock = false }
+
   return {
     messages,
     push,
     clear,
     start,
-    stop
+    stop,
+    unlock
   }
 }
 
 export {
-  bus,
-  serialBus,
-  scaleBus
+  bus
 }
