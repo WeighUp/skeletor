@@ -57,6 +57,8 @@ export const init = ({
     err => {
       store.dispatch({type: 'serialPortConnected', payload: {serialPort}})
       Object.values(store.getState().scales.connectedScales).forEach(scale => {
+         serialBus.push(ScaleCommands.zeroCell(scale.address))
+
          let getWeightInterval = setInterval(()=>{
           serialBus.push(
                 ScaleCommands.getWeight(scale.address)

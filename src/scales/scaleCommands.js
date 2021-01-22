@@ -17,6 +17,52 @@ export const getWeight = (address) => {
   })
 }
 
+
+/**
+ * Sample zero load for calibration procedure
+ */
+export const sampleDeadload = (address) => {
+  return ScaleMessages.scaleMessage({
+    address,
+    command : ScaleCodes.SAMPLE_DEADLOAD,
+    data    : [],
+  })
+}
+
+/**
+ * Sample known calibration weight for calibration procedure
+ */
+export const sampleCalibrationLoad = (address) => {
+  return ScaleMessages.scaleMessage({
+    address,
+    command : ScaleCodes.SAMPLE_CALIBRATION,
+    data    : [],
+  })
+}
+
+/**
+ * Cell will reboot within 2 seconds
+ */
+export const resetCell = (address) => {
+  return ScaleMessages.scaleMessage({
+    address,
+    command : ScaleCodes.RESET_CELL,
+    data    : [],
+  })
+}
+
+/**
+ * Zero the current weight reading of the cell
+ */
+export const zeroCell = (address) => {
+  return ScaleMessages.scaleMessage({
+    address,
+    command : ScaleCodes.ZERO_CELL,
+    data    : [],
+  })
+}
+
+
 /**
  * cell capacity
  * max capacity is 10000
