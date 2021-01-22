@@ -7,7 +7,7 @@ import moment             from 'moment'
 
 import connectSerialPort  from '../serial'
 
-import { serialBus as _serialBus }      from '../bus'
+import { bus as _serialBus }      from '../bus'
 
 import {
   ScaleCodes,
@@ -30,10 +30,8 @@ export const init = ({
   let sentMessageCount = 0,
       receivedMessageCount = 0
 
-  const serialBus = _serialBus({
-    serialInterval,
-    scaleInterval,
-    send: message => {
+  const serialBus = _serialBus(
+    message => {
       serialPort.write(
           Buffer.from(
             ScaleMessages.toBytes(message)
@@ -49,8 +47,9 @@ export const init = ({
           message
         }
       })
-    }
-  })
+    },  
+    serialInterval,
+  )
   serialBus.start()
 
   const serialPort = connectSerialPort(
@@ -62,7 +61,7 @@ export const init = ({
           serialBus.push(
                 ScaleCommands.getWeight(scale.address)
           )
-        }, 2000)
+        }, 100)
       })
     },
 
