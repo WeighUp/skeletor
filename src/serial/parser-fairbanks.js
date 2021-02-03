@@ -26,15 +26,26 @@ export class FairbanksParser extends Transform {
   }
 
   _transform(chunk, encoding, cb) {
+    log.debug('chunk received from serial', chunk)
     let data = Buffer.concat([this.buffer, chunk])
+    log.debug('buffered serial data', data)
     let position
     let offset = 0
     while ((position = data.indexOf(this.delimiter, offset)) !== -1) {
-      if(position === (data[1] + 1)) {
+      //if position of delimiter is at the message length
+      if (position === (data[1] + 1)) {
         this.push(data.slice(0, position + (this.includeDelimiter ? this.delimiter.length : 0)))
         data = data.slice(position + this.delimiter.length)
       }
-      else { offset++ }
+      else if (data.length >= 32) {
+        log.warn('flushing buffer - overflow')
+        data = Buffer.alloc(0)
+      }
+      else if (data[0] != 0x3c || data.length > data[1]) {
+        log.warn('corrupted message!')
+        data = Buffer.alloc(0)
+      }
+      else { offset = position }
     }
     this.buffer = data
     cb()
