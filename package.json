@@ -9,7 +9,7 @@
   "scripts": {
     "prestart-prod": "npm run build",
     "start-prod": "NODE_ENV='production' node ./dist/index.js",
-    "start": "npm run dev",
+    "start": "npm run dev --",
     "start-dev-remote": "remotedev --hostname=localhost --port=8999 & npm run dev",
     "dev": "NODE_ENV='development' babel-node ./src/index.js",
     "init": "mkdir dist",

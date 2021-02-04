@@ -25,7 +25,8 @@ export const init = ({
   devicePath,
   measurementRead,
   serialInterval,
-  scaleInterval
+  scaleInterval,
+  zeroScales,
 }) => {
   let sentMessageCount = 0,
       receivedMessageCount = 0
@@ -58,11 +59,13 @@ export const init = ({
     err => {
       store.dispatch({type: 'serialPortConnected', payload: {serialPort}})
       Object.values(store.getState().scales.connectedScales).forEach(scale => {
-         serialBus.push(ScaleCommands.zeroCell(scale.address))
+        if(zeroScales) {
+          serialBus.push(ScaleCommands.zeroCell(scale.address))
+        }
 
-         let getWeightInterval = setInterval(()=>{
+        let getWeightInterval = setInterval(()=>{
           serialBus.push(
-                ScaleCommands.getWeight(scale.address)
+            ScaleCommands.getWeight(scale.address)
           )
         }, 100)
       })
