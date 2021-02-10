@@ -83,7 +83,7 @@ const scales = createSlice ({
           [payload.address] : {
             ...scales.connectedScales[payload.address],
             measurements: [
-              ...scales.connectedScales[payload.address].measurements,
+              ...scales.connectedScales[payload.address]?.measurements,
               {
                 measurement: payload.measurement,
                 readingTime: payload.readingTime
