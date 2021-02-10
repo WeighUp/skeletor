@@ -2,8 +2,6 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
-console.debug('Command line args:', process.argv)
-
 export const WEIGHUP_SCALE_DEVICE_PATH = process.env.WEIGHUP_SCALE_DEVICE_PATH || '/dev/ttyUSB0'
 export const WEIGHUP_API_URL           = process.env.WEIGHUP_API_URL || 'http://localhost:8000/api/v1'
 export const WEIGHUP_HUB_ID            = parseInt(process.env.WEIGHUP_HUB_ID) || 1
