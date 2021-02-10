@@ -19,22 +19,26 @@ import App, {
   init
 }                         from './app'
 
+const latestMeasurements = {}
 
 log.debug('Config values loaded:', conf)
 
 init({
   devicePath: conf.WEIGHUP_SCALE_DEVICE_PATH,
   measurementRead:  msg => {
-    axios.post(`${conf.WEIGHUP_API_URL}/measurements.json`,{
-      hub_id: conf.WEIGHUP_HUB_ID,
-      scale_uuid: msg.address,
-      weight: msg.data,
-      //reading_time: moment().format("ddd MMM DD HH:mm:ss ZZ YYYY")
-      reading_time: moment().format("YYYY-MMM-DD HH:mm:ss")
-    })
-    .catch(error => {
-      log.error(error.message)
-    })
+    if (Math.abs(latestMeasurements[msg.address] - msg.data) >= 3) {
+      axios.post(`${conf.WEIGHUP_API_URL}/measurements.json`,{
+        hub_id: conf.WEIGHUP_HUB_ID,
+        scale_uuid: msg.address,
+        weight: msg.data,
+        //reading_time: moment().format("ddd MMM DD HH:mm:ss ZZ YYYY")
+        reading_time: moment().format("YYYY-MMM-DD HH:mm:ss")
+      })
+      .catch(error => {
+        log.error(error.message)
+      })
+    }
+    latestMeasurements[msg.address] = msg.data
   },
   scaleInterval: conf.WEIGHUP_SCALE_INTERVAL,
   serialInterval: conf.WEIGHUP_SERIAL_INTERVAL,
