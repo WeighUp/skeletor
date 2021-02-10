@@ -39,6 +39,7 @@ init({
       })
     }
     latestMeasurements[msg.address] = msg.data
+    log.debug('Measurement read. Latest measurements:', latestMeasurements)
   },
   scaleInterval: conf.WEIGHUP_SCALE_INTERVAL,
   serialInterval: conf.WEIGHUP_SERIAL_INTERVAL,
