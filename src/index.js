@@ -1,4 +1,5 @@
 import * as conf          from './config'
+import './app/setupLogger'
 
 import blessed            from 'blessed'
 import { render }         from 'react-blessed'
@@ -12,28 +13,12 @@ import { Provider }       from 'react-redux/lib/alternate-renderers'
 import axios              from 'axios'
 import moment             from 'moment'
 
-import log from 'loglevel'
-import prefix from 'loglevel-plugin-prefix'
-
 import App, {
   store,
   ErrorBoundary,
   init
 }                         from './app'
 
-//use loglevel logger throughout app
-global.log = log
-prefix.reg(log)
-log.enableAll()
-prefix.apply(log, {
-  template: '[%t] %l:',
-  levelFormatter: function (level) {
-    return level.toUpperCase();
-  },
-  timestampFormatter: function (date) {
-    return date.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, '$1');
-  }
-})
 
 log.debug('Config values loaded:', conf)
 
