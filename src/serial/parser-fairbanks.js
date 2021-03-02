@@ -1,5 +1,6 @@
 import { Transform } from 'stream'
 
+if (!window.log) { window.log = window.console }
 /**
  * A transform stream that emits data each time a byte sequence is received.
  * @extends Transform
@@ -41,11 +42,11 @@ export class FairbanksParser extends Transform {
         log.warn('flushing buffer - overflow')
         data = Buffer.alloc(0)
       }
-      else if (data[0] != 0x3c || data.length > data[1]) {
+      else if (data[0] != 0x3c || data.length > data[1] + 2) {
         log.warn('corrupted message!')
         data = Buffer.alloc(0)
       }
-      else { offset = position }
+      else { offset = position + 1 }
     }
     this.buffer = data
     cb()

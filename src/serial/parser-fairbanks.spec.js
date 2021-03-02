@@ -91,6 +91,23 @@ describe('FairbanksParser', () => {
       }).toThrow()
     })
   })
+
+  it('continues parsing idk', () => {
+    const msga = [0x3c, 0x10, 0x00, 0xb7, 0x6a, 0x8d, 0x77, 0xff, 0x3e]
+    const msgb = [0x30, 0x39, 0x30, 0x34, 0x2e, 0x30, 0x20, 0xd5, 0x3e]
+
+    const fn = jest.fn()
+    const parser = new FairbanksParser()
+    parser.on('data', fn)
+
+    parser.write(Buffer.from(msga))
+
+    expect(fn).not.toBeCalled()
+
+    parser.write(Buffer.from(msgb))
+
+    expect(fn).toBeCalled()
+  })
 //
 //  it('allows setting of the delimiter with a string', () => {
 //    new DelimiterParser({ delimiter: 'string' })
