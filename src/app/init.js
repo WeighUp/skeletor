@@ -50,7 +50,7 @@ export const init = ({
       })
     },
     serialInterval,
-    100
+    100 //timeout
   )
   serialBus.start()
 
@@ -58,17 +58,21 @@ export const init = ({
     devicePath,
     err => {
       store.dispatch({type: 'serialPortConnected', payload: {serialPort}})
-      Object.values(store.getState().scales.connectedScales).forEach(scale => {
-        if(zeroScales) {
+      const connectedScales = store.getState().scales.connectedScales
+	
+      if(zeroScales) {
+        Object.values(connectedScales).forEach(scale => {
           serialBus.push(ScaleCommands.zeroCell(scale.address))
-        }
+        })
+      }
 
-        let getWeightInterval = setInterval(()=>{
+      let getWeightInterval = setInterval(()=>{
+        Object.values(connectedScales).forEach(scale => {
           serialBus.push(
             ScaleCommands.getWeight(scale.address)
           )
-        }, 100)
-      })
+	})
+      }, connectedScales.length * serialInterval)
     },
 
     data => {
