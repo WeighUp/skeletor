@@ -137,6 +137,12 @@ export const fromBytes = (serialData) => {
         data           = String.fromCharCode(...serialData.slice(7, serialData.length - 2)),
         checksum       = serialData[serialData.length - 2],
         term           = String.fromCharCode(serialData[serialData.length - 1])
+        error          = data.length >= 2 && String.fromCharCode(data[data.length - 2]) === 'E'
+                         ? String.fromCharCode(data[data.length - 1])
+                         : null
+        flag           = !error && command === scaleCodes.GET_WEIGHT_RESP && String.fromCharCode(data[data.length - 1]) !== ' '
+                         ? String.fromCharCode(data[data.length - 1])
+                         : null
 
   return {
     prefix,
@@ -144,6 +150,7 @@ export const fromBytes = (serialData) => {
     address,
     command,
     data,
+    error,
     checksum,
     term
   }
