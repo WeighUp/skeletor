@@ -26,6 +26,9 @@ log.debug('Config values loaded:', conf)
 init({
   devicePath: conf.WEIGHUP_SCALE_DEVICE_PATH,
   measurementRead:  message => {
+    //always keep the first one
+    if (!latestMeasurements[message.address] && !message.error && !message.flag)
+
     if (Math.abs(latestMeasurements[message.address] - parseFloat(message.data)) >= 3 && !message.error && !message.flag) {
       latestMeasurements[message.address] = parseFloat(message.data)
       axios.post(`${conf.WEIGHUP_API_URL}/measurements.json`,{
