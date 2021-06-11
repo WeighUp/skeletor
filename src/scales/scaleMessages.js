@@ -139,7 +139,7 @@ export const fromBytes = (serialData) => {
         term           = String.fromCharCode(serialData[serialData.length - 1]),
         error          = data.length >= 2 && String.fromCharCode(data[data.length - 2]) === 'E'
                          ? String.fromCharCode(data[data.length - 1])
-                         : null
+                         : null,
         flag           = !error && command === scaleCodes.GET_WEIGHT_RESP && String.fromCharCode(data[data.length - 1]) !== ' '
                          ? String.fromCharCode(data[data.length - 1])
                          : null
