@@ -151,6 +151,7 @@ export const fromBytes = (serialData) => {
     command,
     data,
     error,
+    flag,
     checksum,
     term
   }
