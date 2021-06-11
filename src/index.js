@@ -28,6 +28,7 @@ init({
   measurementRead:  message => {
     //always keep the first one
     if (!latestMeasurements[message.address] && !message.error && !message.flag)
+      latestMeasurements[message.address] = parseFloat(message.data)
 
     if (Math.abs(latestMeasurements[message.address] - parseFloat(message.data)) >= 3 && !message.error && !message.flag) {
       latestMeasurements[message.address] = parseFloat(message.data)
