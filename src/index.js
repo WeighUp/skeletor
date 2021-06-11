@@ -27,6 +27,7 @@ init({
   devicePath: conf.WEIGHUP_SCALE_DEVICE_PATH,
   measurementRead:  message => {
     if (Math.abs(latestMeasurements[message.address] - parseFloat(message.data)) >= 3 && !message.error && !message.flag) {
+      latestMeasurements[message.address] = parseFloat(message.data)
       axios.post(`${conf.WEIGHUP_API_URL}/measurements.json`,{
         hub_id: conf.WEIGHUP_HUB_ID,
         scale_uuid: message.address,
@@ -38,7 +39,6 @@ init({
         log.error(error.message)
       })
     }
-    latestMeasurements[message.address] = parseFloat(message.data)
     log.debug('Measurement read. Latest measurements:', latestMeasurements)
   },
   scaleInterval: conf.WEIGHUP_SCALE_INTERVAL,
