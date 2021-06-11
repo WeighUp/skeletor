@@ -136,7 +136,7 @@ export const fromBytes = (serialData) => {
         command        = String.fromCharCode(serialData[6]),
         data           = String.fromCharCode(...serialData.slice(7, serialData.length - 2)),
         checksum       = serialData[serialData.length - 2],
-        term           = String.fromCharCode(serialData[serialData.length - 1])
+        term           = String.fromCharCode(serialData[serialData.length - 1]),
         error          = data.length >= 2 && String.fromCharCode(data[data.length - 2]) === 'E'
                          ? String.fromCharCode(data[data.length - 1])
                          : null
